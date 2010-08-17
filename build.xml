@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="echo-as3" default="compile" basedir=".">
+	
+	<property file="${basedir}/build.properties" />
+	
+	<target name="compile" depends="clean" description="Build API docs and SWC">
+		<antcall target="api-docs" description="Full build of API docs"/>
+		<antcall target="build-lib" description="Build the SWC file"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${basedir}/${app.outputfolder}" failOnError="true"
+                includeEmptyDirs="true"/>
+		<mkdir dir="${basedir}/${app.outputfolder}"/>
+	</target>
+
+	<target name="api-docs" description="Generate API documentation">
+		<exec executable="${asdoc.exe}" failonerror="true"
+			  dir="${app.src}">
+			<arg line="-load-config+='${basedir}/${docs.config}'"/>
+			<arg value="-load-config+=${basedir}/config/compiler-def.xml" />
+			<arg value="-external-library-path" />
+			<arg value="${basedir}/${lib.path}" />
+		</exec>
+	</target>
+
+	<target name="build-lib" description="Build SWC library">
+		<exec executable="${compc.exe}" failonerror="true">
+			<arg line="-load-config+='${basedir}/${app.config}'"/>
+            <arg value="-load-config+=${basedir}/config/compiler-def.xml" />
+		</exec>
+	</target>
+    
+    <target name="update-manifest" description="Update class manifest">
+		<exec executable="bash" failonerror="true">
+			<arg line="${manifest.exe}"/>
+            <arg line="${app.src}"/>
+			<arg value="test.xml" />
+		</exec>
+    	<move file="${app.src}/test.xml" tofile="${lib.manifest}"
+              overwrite="true" />
+	</target>
+
+</project>
