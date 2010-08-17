@@ -1,0 +1,8 @@
+/lib/*.swc
+/lib/*Report.txt
+/lib/*.swf
+/bin
+/bin-debug
+/GenerateManifest
+/*.iml
+/.settings
