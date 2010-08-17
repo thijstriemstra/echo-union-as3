@@ -1,0 +1,13 @@
+<flex-config>
+
+    <compiler>
+
+        <!-- compiler.define: define a global AS3 conditional compilation definition -->
+        <define>
+            <name>ECHO_UNION::version</name>
+            <value>'0.1a1'</value>
+        </define>
+
+    </compiler>
+
+</flex-config>

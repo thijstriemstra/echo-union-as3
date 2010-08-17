@@ -1,0 +1,31 @@
+<flex-config>
+   
+   <!-- doc-sources: list of source file to include in the documentation.-->
+   <doc-sources>
+      <path-element>com/collab/echo/union</path-element>
+   </doc-sources>
+   
+   <!-- examples-path: path to look for the example files.-->
+   <!-- examples-path usage:
+   <examples-path>string</examples-path>
+   -->
+
+   <main-title>Union for Echo</main-title>
+
+   <window-title>Union for Echo</window-title>
+
+   <!-- footer: footer string to be displayed in the documentation.-->
+   <footer>Copyright 2010 Collab</footer>
+
+   <!-- left-frameset-width: width of the left frame.-->
+   <left-frameset-width>350</left-frameset-width>
+   
+   <!-- lenient: Report XHTML errors as warnings.-->
+   <lenient>false</lenient>
+
+   <package-description-file>../doc/package-description.xml</package-description-file>
+
+    <keep-xml>false</keep-xml>
+
+    <output>../bin/api</output>
+</flex-config>

@@ -1,0 +1,16 @@
+<overviews>
+    <packages>
+        <package name="com.collab.echo.union.net">
+            <shortDescription>
+                <![CDATA[
+                   The com.collab.echo.union.net package contains classes for sending and receiving from a Union server.
+                ]]>
+            </shortDescription>
+            <description>
+                <![CDATA[
+                   The com.collab.echo.union.net package contains classes for sending and receiving from a Union server.
+                ]]>
+            </description>
+        </package>
+    </packages>
+</overviews>

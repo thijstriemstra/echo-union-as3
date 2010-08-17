@@ -1,0 +1,64 @@
+<flex-config>
+    <!-- benchmark: output performance benchmark-->
+    <benchmark>true</benchmark>
+
+    <compiler>
+        <!-- compiler.debug: generates a movie that is suitable for debugging-->
+        <debug>false</debug>
+
+        <!-- compiler.show-actionscript-warnings: runs the AS3 compiler in a mode that
+             detects legal but potentially incorrect code-->
+        <show-actionscript-warnings>true</show-actionscript-warnings>
+
+        <!-- compiler.source-path: list of path elements that form the roots of
+             ActionScript class hierarchies -->
+        <source-path>
+            <path-element>../src</path-element>
+        </source-path>
+
+        <namespaces>
+            <namespace>
+                <uri>http://echo.collab.com</uri>
+                <manifest>class-manifest.xml</manifest>
+            </namespace>
+        </namespaces>
+
+        <!-- compiler.library-path: list of SWC files or directories that contain SWC files-->
+      <library-path>
+         <path-element>../lib</path-element>
+      </library-path>
+
+    </compiler>
+
+    <!-- include-namespaces: all classes in the listed namespaces are included in the output SWC-->
+    <include-namespaces>
+        <uri>http://echo.collab.com</uri>
+    </include-namespaces>
+
+    <!-- link-report: Output a XML-formatted report of all definitions linked into the application.-->
+    <link-report>../bin/link-report.xml</link-report>
+
+    <metadata>
+        <!-- metadata.creator: A creator's name to store in the SWF metadata-->
+        <creator>Collab</creator>
+
+        <!-- metadata.description: The default description to store in the SWC metadata-->
+        <description>http://echo.collab.com</description>
+
+        <!-- metadata.title: The default title to store in the SWF metadata-->
+        <title>Union for Echo</title>
+    </metadata>
+
+    <!-- output: the filename of the SWC to create-->
+    <output>../bin/echo-union-as3.swc</output>
+
+    <!-- static-link-runtime-shared-libraries: statically link the libraries
+         specified by the -runtime-shared-libraries-path option.-->
+   <static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
+
+    <!-- target-player: specifies the version of the player the application is targeting.
+         Features requiring a later version will not be compiled into the application. The minimum value
+         supported is "9.0.0".-->
+    <target-player>10.1.0</target-player>
+
+</flex-config>

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<componentPackage>
+	<component id="UnionConnection" class="com.collab.echo.union.net.UnionConnection"/>
+</componentPackage>
