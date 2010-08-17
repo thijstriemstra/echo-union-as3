@@ -12,5 +12,29 @@
                 ]]>
             </description>
         </package>
+        <package name="com.collab.echo.union.rooms">
+            <shortDescription>
+                <![CDATA[
+                   The com.collab.echo.union.rooms package contains Union room classes.
+                ]]>
+            </shortDescription>
+            <description>
+                <![CDATA[
+                   The com.collab.echo.union.rooms package contains Union room classes.
+                ]]>
+            </description>
+        </package>
+        <package name="com.collab.echo.union.util">
+            <shortDescription>
+                <![CDATA[
+                   The com.collab.echo.union.util package contains various helper classes.
+                ]]>
+            </shortDescription>
+            <description>
+                <![CDATA[
+                   The com.collab.echo.union.util package contains various helper classes.
+                ]]>
+            </description>
+        </package>
     </packages>
 </overviews>

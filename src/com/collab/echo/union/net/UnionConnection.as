@@ -23,8 +23,8 @@ package com.collab.echo.union.net
 	import com.collab.echo.core.rooms.BaseRoom;
 	import com.collab.echo.events.BaseRoomEvent;
 	import com.collab.echo.model.UserVO;
-	import com.collab.echo.union.util.RoomUtils;
 	import com.collab.echo.net.Connection;
+	import com.collab.echo.union.util.RoomUtils;
 	
 	import net.user1.logger.Logger;
 	import net.user1.reactor.ClientManager;
