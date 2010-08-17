@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
 <componentPackage>
+	<component id="RoomUtils" class="com.collab.echo.union.util.RoomUtils"/>
 	<component id="UnionConnection" class="com.collab.echo.union.net.UnionConnection"/>
+	<component id="UnionRoom" class="com.collab.echo.union.rooms.UnionRoom"/>
 </componentPackage>

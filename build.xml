@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="echo-as3" default="compile" basedir=".">
+<project name="echo-union-as3" default="compile" basedir=".">
 	
 	<property file="${basedir}/build.properties" />
 	

@@ -1,7 +1,7 @@
 /*
 Echo project.
 
-Copyright (C) 2003-2010 Collab
+Copyright (C) 2010 Collab
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ package com.collab.echo.union.net
 	import com.collab.echo.core.rooms.BaseRoom;
 	import com.collab.echo.events.BaseRoomEvent;
 	import com.collab.echo.model.UserVO;
-	import com.collab.echo.util.RoomUtils;
+	import com.collab.echo.union.util.RoomUtils;
 	import com.collab.echo.net.Connection;
 	
 	import net.user1.logger.Logger;
