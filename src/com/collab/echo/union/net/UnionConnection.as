@@ -163,7 +163,7 @@ package com.collab.echo.union.net
             {
             	// notify others
 				super.connect();
-			
+
                 trace( "Connecting to Union server on " + url + ":" + port );
 
                 // create reactor
@@ -243,7 +243,7 @@ package com.collab.echo.union.net
         }
         
         /**
-		 * Watch for rooms.
+		 * @inheritDoc
 		 */		
 		override public function watchRooms():void
 		{
