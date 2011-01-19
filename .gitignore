@@ -1,8 +1,11 @@
 /lib/*.swc
 /lib/*Report.txt
 /lib/*.swf
+/lib/*.jar
 /bin
 /bin-debug
 /GenerateManifest
 /*.iml
 /.settings
+/.FlexUnitSettings
+/build.properties
