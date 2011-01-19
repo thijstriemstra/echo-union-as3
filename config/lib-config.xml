@@ -1,0 +1,28 @@
+<!--
+Copyright (C) 2010-2011 Collab
+
+Flex configuration file for Library compiler settings.
+-->
+<flex-config>
+
+    <!-- include-namespaces: all classes in the listed namespaces are included in the output SWC-->
+    <include-namespaces>
+        <uri>http://echo.collab.com</uri>
+    </include-namespaces>
+
+    <!-- link-report: Output a XML-formatted report of all definitions linked into the application.-->
+    <link-report>../bin/link-report.xml</link-report>
+
+	<!-- output: the filename of the SWC to create-->
+    <output>../bin/echo-union-as3.swc</output>
+
+    <!-- static-link-runtime-shared-libraries: statically link the libraries
+         specified by the -runtime-shared-libraries-path option.-->
+   <static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
+
+    <!-- target-player: specifies the version of the player the application is targeting.
+         Features requiring a later version will not be compiled into the application. The minimum value
+         supported is "9.0.0".-->
+    <target-player>10.1.0</target-player>
+    
+</flex-config>

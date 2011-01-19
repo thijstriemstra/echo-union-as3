@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="echo-union-as3" default="compile" basedir=".">
+<!--
+Copyright (C) 2010-2011 Collab
+
+Project build file.
+-->
+<project name="echo-union-as3" default="all" basedir=".">
 	
 	<property file="${basedir}/build.properties" />
 	
-	<target name="compile" depends="clean" description="Build API docs and SWC">
-		<antcall target="api-docs" description="Full build of API docs"/>
-		<antcall target="build-lib" description="Build the SWC file"/>
+	<xmlproperty file="${FLEX_HOME}/flex-sdk-description.xml" keepRoot="false"
+		                 prefix="flex"/>
+	    
+    <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    <taskdef resource="flexUnitTasks.tasks">
+       <classpath>
+           <fileset dir="${lib.path}">
+               <include name="flexUnitTasks*.jar" />
+           </fileset>
+       </classpath>
+    </taskdef>
+	
+	<target name="build-environment">
+		<echo>${ant.version}</echo>
+		<echo>Java ${ant.java.version}</echo>
+		<echo>Flex ${flex.version}.${flex.build}</echo>
 	</target>
-
+	
+	<target name="all" depends="clean" description="Build API docs, run tests and build SWC">
+		<antcall target="api-docs" />
+		<antcall target="build-lib" />
+	</target>
+	
 	<target name="clean">
 		<delete dir="${basedir}/${app.outputfolder}" failOnError="true"
                 includeEmptyDirs="true"/>
@@ -15,19 +38,28 @@
 	</target>
 
 	<target name="api-docs" description="Generate API documentation">
-		<exec executable="${asdoc.exe}" failonerror="true"
-			  dir="${app.src}">
-			<arg line="-load-config+='${basedir}/${docs.config}'"/>
-			<arg value="-load-config+=${basedir}/config/compiler-def.xml" />
-			<arg value="-external-library-path" />
-			<arg value="${basedir}/${lib.path}" />
+		<echo>=========================</echo>
+		<echo>=   API DOCUMENTATION   =</echo>
+		<echo>=========================</echo>
+		<antcall target="build-environment" />
+		<delete dir="${basedir}/${app.outputfolder}/api" failOnError="false"
+		                includeEmptyDirs="true"/>
+		<exec executable="${asdoc.exe}" failonerror="true" dir="${app.src}">
+			<arg line="-load-config+=${basedir}/${app.config}"/>
+			<arg value="-load-config+=${basedir}/${docs.config}" />
+			<arg value="-load-config+=${basedir}/${def.config}" />
 		</exec>
 	</target>
 
 	<target name="build-lib" description="Build SWC library">
+		<echo>=====================</echo>
+		<echo>=   BUILD LIBRARY   =</echo>
+		<echo>=====================</echo>
+		<antcall target="build-environment" />
 		<exec executable="${compc.exe}" failonerror="true">
-			<arg line="-load-config+='${basedir}/${app.config}'"/>
-            <arg value="-load-config+=${basedir}/config/compiler-def.xml" />
+			<arg line="-load-config+=${basedir}/${app.config}"/>
+			<arg value="-load-config+=${basedir}/${lib.config}" />
+			<arg value="-load-config+=${basedir}/${def.config}" />
 		</exec>
 	</target>
     

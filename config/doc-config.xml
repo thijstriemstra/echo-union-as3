@@ -1,4 +1,14 @@
+<!--
+Copyright (C) 2010-2011 Collab
+
+Flex configuration file for Documentation compiler settings.
+-->
 <flex-config>
+   
+   <compiler>
+       <strict>false</strict>
+       <show-actionscript-warnings>false</show-actionscript-warnings>
+   </compiler>
    
    <!-- doc-sources: list of source file to include in the documentation.-->
    <doc-sources>
@@ -15,7 +25,7 @@
    <window-title>Union for Echo</window-title>
 
    <!-- footer: footer string to be displayed in the documentation.-->
-   <footer>Copyright 2010 Collab</footer>
+   <footer>Copyright 2010-2011 Collab</footer>
 
    <!-- left-frameset-width: width of the left frame.-->
    <left-frameset-width>350</left-frameset-width>
