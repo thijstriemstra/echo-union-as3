@@ -29,6 +29,7 @@ Project build file.
 	<target name="all" depends="clean" description="Build API docs, run tests and build SWC">
 		<antcall target="api-docs" />
 		<antcall target="build-lib" />
+		<antcall target="test-lib" />
 	</target>
 	
 	<target name="clean">
@@ -62,6 +63,38 @@ Project build file.
 			<arg value="-load-config+=${basedir}/${def.config}" />
 		</exec>
 	</target>
+    
+	<target name="test-lib" description="Run tests and publish reports">
+		<echo>==================</echo>
+		<echo>=   UNIT TESTS   =</echo>
+		<echo>==================</echo>
+		<antcall target="build-environment" />
+		<delete dir="${app.reports}" failOnError="false"
+				includeEmptyDirs="true"/>
+		<mkdir dir="${app.reports}" />
+		
+		<flexunit workingDir="${app.reports}"
+		          toDir="${app.reports}" haltonfailure="false"
+	              command="${flashplayer.exe}"
+			      localTrusted="true" verbose="false">
+	      <source dir="${app.src}" />
+	      <testSource dir="${app.tests}">
+	         <include name="**/*Suite.as" />
+	      </testSource>
+	      <library dir="${lib.path}" />
+	   </flexunit>
+	
+	   <junitreport todir="${app.reports}">
+			<fileset dir="${app.reports}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="noframes" todir="${app.reports}/html">
+				<param name="TITLE" expression="Test results for Echo Union ${lib.version}"/>
+			</report>
+	   </junitreport>
+	   <move file="${app.reports}/html/junit-noframes.html"
+	  	     tofile="${app.reports}/html/index.html"/>
+    </target>
     
     <target name="update-manifest" description="Update class manifest">
 		<exec executable="bash" failonerror="true">

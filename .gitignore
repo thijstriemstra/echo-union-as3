@@ -4,8 +4,9 @@
 /lib/*.jar
 /bin
 /bin-debug
+/html-template
 /GenerateManifest
-/*.iml
+/src/FlexUnit*.as
 /.settings
 /.FlexUnitSettings
 /build.properties
