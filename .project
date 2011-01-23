@@ -16,7 +16,22 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] src</name>
+			<name>[source path] cabin-src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/cabin/src</locationURI>
+		</link>
+		<link>
+			<name>[source path] echo-as3-src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/echo-as3/src</locationURI>
+		</link>
+		<link>
+			<name>com.collab.cabin</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/cabin/src</locationURI>
+		</link>
+		<link>
+			<name>com.collab.echo</name>
 			<type>2</type>
 			<locationURI>DOCUMENTS/echo-as3/src</locationURI>
 		</link>

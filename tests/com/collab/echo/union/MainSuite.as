@@ -18,12 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.collab.echo.union
 {
+	import com.collab.echo.union.net.UnionConnectionTest;
+	import com.collab.echo.union.rooms.UnionRoomTest;
 	import com.collab.echo.union.util.RoomUtilsTest;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
-	public class TestSuite
+	public class MainSuite
 	{
 		public var t1	: RoomUtilsTest;
+		public var t2	: UnionRoomTest;
+		public var t3	: UnionConnectionTest;
 	}
 }

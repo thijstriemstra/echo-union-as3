@@ -79,12 +79,16 @@ package com.collab.echo.union.net
 		/**
 		 * Return reference to reactor.self().
 		 * 
-		 * @return 
+		 * @return IClient instance.
 		 */		
 		override public function get self():*
 		{
 			return reactor.self();
 		}
+		
+		// ====================================
+		// PRIVATE VARS
+		// ====================================
 		
 		/**
 		 * Reference to reactor.getRoomManager().
@@ -138,11 +142,6 @@ package com.collab.echo.union.net
 		
 		/**
 		 * Create new Union connection.
-		 * 
-		 * @param host
-		 * @param port
-		 * @param logging
-		 * @param logLevel
 		 */		
 		public function UnionConnection( host:String, port:int,
 										 logging:Boolean=true, logLevel:String="info" )
@@ -164,7 +163,8 @@ package com.collab.echo.union.net
             	// notify others
 				super.connect();
 
-                trace( "Connecting to Union server on " + url + ":" + port );
+                trace( StringUtil.replace( "Connecting to Union server on %s:%s",
+					   url, port ));
 
                 // create reactor
                 reactor = new Reactor( "", logging );
@@ -187,6 +187,19 @@ package com.collab.echo.union.net
                 reactor.connect();
             }
         }
+		
+		/**
+		 * Disconnect from server. 
+		 */		
+		override public function disconnect():void
+		{
+			if ( _connected )
+			{
+				super.disconnect();
+			
+				reactor.disconnect();
+			}
+		}
         
         /**
 		 * Parse user.
@@ -258,7 +271,7 @@ package com.collab.echo.union.net
 			}
 			
 			var commonRoomQualifier:String = StringUtil.replace( "%s.*",
-												RoomUtils.getRoomsQualifiers( ids ));
+											 RoomUtils.getRoomsQualifiers( ids ));
 			
 			roomManager.watchForRooms( commonRoomQualifier );
 		}
@@ -281,7 +294,8 @@ package com.collab.echo.union.net
         	
         	if ( result )
         	{
-        		trace("addServerMessageListener - type: " + type + ", method: " + method );
+        		trace( StringUtil.replace( "addServerMessageListener - type: %s, method: %s",
+										   type, method ));
         	}
         	
         	return result;
@@ -290,7 +304,8 @@ package com.collab.echo.union.net
         /**
          * @inheritDoc 
          */             
-        override public function removeServerMessageListener( type:String, method:Function ):Boolean
+        override public function removeServerMessageListener( type:String,
+															  method:Function ):Boolean
         {
         	var result:Boolean = false;
         	
@@ -310,11 +325,12 @@ package com.collab.echo.union.net
          * @param message		The name of the message to send.
          * @param forRoomIDs	The room(s) to which to send the message.
          */		
-        override public function sendServerMessage( message:ChatMessage, forRoomIDs:Array=null ) : void
+        override public function sendServerMessage( message:ChatMessage,
+													forRoomIDs:Array=null ) : void
         {
 			roomManager.sendMessage( message.type, forRoomIDs,
-									 			  message.includeSelf, null,
-									 			  message.message );
+						 			 message.includeSelf, null,
+						 			 message.message );
         }
         
         /**

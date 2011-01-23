@@ -18,34 +18,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.collab.echo.union.util
 {
+	import com.collab.echo.core.rooms.BaseRoom;
+	
+	import org.hamcrest.assertThat;
+	import org.hamcrest.collection.arrayWithSize;
+	import org.hamcrest.collection.emptyArray;
+	import org.hamcrest.object.equalTo;
+	
 	public class RoomUtilsTest
 	{		
+		private var rooms	: Vector.<BaseRoom>;
+		
 		[Before]
 		public function setUp():void
 		{
+			var room:BaseRoom;
+			var cnt:int = 0;
+			
+			rooms = new Vector.<BaseRoom>();
+			
+			for ( cnt; cnt < 2; cnt++ )
+			{
+				room = new BaseRoom( "room" + cnt );
+				rooms.push( room );
+			}
 		}
 		
 		[After]
 		public function tearDown():void
 		{
-		}
-		
-		[BeforeClass]
-		public static function setUpBeforeClass():void
-		{
-		}
-		
-		[AfterClass]
-		public static function tearDownAfterClass():void
-		{
+			rooms = null;
 		}
 		
 		[Test]
 		public function testGetRoomIDs():void
 		{
+			var ids:Array = RoomUtils.getRoomIDs( rooms );
+			var cnt:int = 0;
+			
+			assertThat( ids, arrayWithSize( 2 ));
+			
+			for ( cnt; cnt < 2; cnt++ )
+			{
+				assertThat( ids[cnt], equalTo( "room" + cnt ));
+			}
+			
+			ids = RoomUtils.getRoomIDs( new Vector.<BaseRoom>() );
+			
+			assertThat( ids, emptyArray() );
 		}
 		
 		[Test]
+		[Ignore]
 		public function testGetRoomsQualifiers():void
 		{
 		}

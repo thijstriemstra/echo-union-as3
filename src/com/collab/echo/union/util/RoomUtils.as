@@ -36,14 +36,14 @@ package com.collab.echo.union.util
 		 * Get list of room id's.
 		 * 
 		 * @param rooms
-		 * @param BaseRoom
 		 * @return 
 		 */		
 		public static function getRoomIDs( rooms:Vector.<BaseRoom> ):Array
 		{
 			var ids:Array = [];
+			var room:BaseRoom;
 			
-			for each ( var room:BaseRoom in rooms )
+			for each ( room in rooms )
 			{
 				ids.push( room.id );
 			}
@@ -55,21 +55,22 @@ package com.collab.echo.union.util
 		 * Get common room qualifers.
 		 * 
 		 * @param rooms
-		 * @param BaseRoom
 		 * @return 
 		 */		
 		public static function getRoomsQualifiers( rooms:Vector.<BaseRoom> ):String
 		{
 			var ids:Array = [];
 			var qs:Array = [];
+			var room:BaseRoom;
 			var id:String;
 			
-			for each ( var room:BaseRoom in rooms )
+			for each ( room in rooms )
 			{
 				id = RoomIDParser.getQualifier( room.id );
 				qs.push( id );
 			}
 			
+			// XXX: ??
 			return qs[ 0 ];
 		}
 

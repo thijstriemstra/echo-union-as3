@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.collab.echo.union.rooms
 {
+	import com.collab.cabin.util.StringUtil;
 	import com.collab.echo.core.rooms.BaseRoom;
 	import com.collab.echo.model.UserVO;
 	import com.collab.echo.net.Connection;
@@ -117,7 +118,7 @@ package com.collab.echo.union.rooms
 			room.addEventListener( RoomEvent.UPDATE_CLIENT_ATTRIBUTE, 		clientAttributeUpdate );
 			room.addEventListener( RoomEvent.SYNCHRONIZE,		 			synchronize );
 			
-			trace( "Creating new " + name + " called: " + id );
+			trace( StringUtil.replace( "Creating new %s called: %s", name, id ));
 			
 			if ( autoJoin )
 			{
@@ -366,7 +367,7 @@ package com.collab.echo.union.rooms
 		 */		
 		override public function toString():String
 		{
-			return "<UnionRoom id='" + id + "' />";
+			return StringUtil.replace( "<UnionRoom id='%s' />", id );
 		}
 		
 		// ====================================
@@ -420,7 +421,8 @@ package com.collab.echo.union.rooms
 				if ( module.type == RoomModuleType.CLASS ||
 					 module.type == RoomModuleType.SCRIPT )
 				{
-					trace( "Adding '" + module.type + "' RoomModule: '" + module.alias + "'" );
+					trace( StringUtil.replace( "Adding '%s' RoomModule: '%s'",
+						   module.type, module.alias ));
 					modules.addModule( module.alias, module.type );
 				}
 			}
@@ -439,7 +441,8 @@ package com.collab.echo.union.rooms
 				method = listeners[ type ];
 				room.addMessageListener( type.toString(), method );
 				
-				trace("room.addMessageListener - " + id + ": " + type + ", method: " + method );
+				trace( StringUtil.replace( "room.addMessageListener - %s: %s, method: %s",
+					   id, type, method ));
 			}
         }
 		
