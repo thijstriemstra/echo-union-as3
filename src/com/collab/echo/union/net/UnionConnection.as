@@ -142,9 +142,12 @@ package com.collab.echo.union.net
 		
 		/**
 		 * Create new Union connection.
+		 * 
+		 * @inheritDoc
 		 */		
 		public function UnionConnection( host:String, port:int,
-										 logging:Boolean=true, logLevel:String="info" )
+										 logging:Boolean=true,
+										 logLevel:String="info" )
 		{
 			super( host, port, logging, logLevel );
 		}
@@ -225,32 +228,40 @@ package com.collab.echo.union.net
         /**
 		 * Create and watch rooms.
 		 * 
-		 * @param rooms
+		 * @param rooms Vector list of BaseRoom subclasses.
 		 */		
 		override public function createRooms( rooms:Vector.<BaseRoom> ):void
 		{
 			_rooms = rooms;
 			
-			var room:BaseRoom;
-			for each ( room in _rooms )
+			if ( rooms.length > 0 )
 			{
-				// create room
-				room.create( this );
+				var room:BaseRoom;
+				for each ( room in _rooms )
+				{
+					// create room
+					room.create( this );
+				}
+
+				watchRooms();
 			}
-			
-			watchRooms();
 		}
         
         /**
-         * Create a new union room.
+         * Create a new Union room.
          * 
-         * @param id
-         * @param settings
-         * @param attrs
-         * @param modules
-         * @return 
+         * @param id		Room name.
+         * @param settings	RoomSettings instance.
+         * @param attrs		XML instance.
+         * @param modules	RoomModules instance.
+         * @return 			Union Room.
+		 * 
+		 * @see net.user1.reactor.RoomModules RoomModules
+		 * @see net.user1.reactor.RoomSettings RoomSettings
+		 * @see net.user1.reactor.Room Room
          */        
-        override public function createRoom( id:String, settings:*, attrs:*, modules:* ):*
+        override public function createRoom( id:String, settings:*, attrs:*,
+											 modules:* ):*
         {
         	return roomManager.createRoom( id, settings, attrs, modules );
         }
@@ -261,8 +272,10 @@ package com.collab.echo.union.net
 		override public function watchRooms():void
 		{
 			// watch for rooms
+			var room:BaseRoom;
 			var ids:Vector.<BaseRoom> = new Vector.<BaseRoom>();
-			for each ( var room:BaseRoom in _rooms )
+			
+			for each ( room in _rooms )
 			{
 				if ( room.watch )
 				{
@@ -382,7 +395,9 @@ package com.collab.echo.union.net
          * @param attrScope
          * @return 
          */        
-        override public function getAttributeForClients(clientIDs:Array, attrName:String, attrScope:String):Array
+        override public function getAttributeForClients(clientIDs:Array,
+														attrName:String,
+														attrScope:String):Array
         {
         	return clientManager.getAttributeForClients( clientIDs, attrName, attrScope );
         }

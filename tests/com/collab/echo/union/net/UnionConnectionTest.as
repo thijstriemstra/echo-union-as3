@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.collab.echo.union.net
 {
+	import com.collab.echo.core.rooms.BaseRoom;
 	import com.collab.echo.events.BaseConnectionEvent;
 	import com.collab.echo.model.UserVO;
 	
@@ -125,28 +126,51 @@ package com.collab.echo.union.net
 			assertThat( conn.connected, equalTo( false ));
 		}
 		
-		[Test]
-		[Ignore]
-		public function testAddServerMessageListener():void
-		{
-		}
-		
-		[Test]
-		[Ignore]
-		public function testRemoveServerMessageListener():void
-		{
-		}
-		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testCreateRoom():void
 		{
+			connect( createRoom );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function createRoom( event:BaseConnectionEvent,
+									   passThroughData:Object ):void
+		{
+			var roomName:String = "room" + int(Math.random() * 1000).toFixed();
+			conn.createRoom( roomName, null, null, null );
+		}
+		
+		[Test( async )]
 		public function testCreateRooms():void
 		{
+			connect( createRooms );
+		}
+		
+		protected function createRooms( event:BaseConnectionEvent,
+										passThroughData:Object ):void
+		{
+			var rooms:Vector.<BaseRoom> = new Vector.<BaseRoom>();
+			var room:BaseRoom;
+			var cnt:int = 0;
+			
+			for ( cnt; cnt < 3; cnt++ )
+			{
+				room = new BaseRoom( "room" + cnt );
+				rooms.push( room );
+			}
+			
+			conn.createRooms( rooms );
+		}
+		
+		[Test( async )]
+		public function testWatchRooms():void
+		{
+			connect( watchRooms );
+		}
+		
+		protected function watchRooms( event:BaseConnectionEvent,
+									   passThroughData:Object ):void
+		{
+			conn.watchRooms();
 		}
 		
 		[Test]
@@ -161,10 +185,19 @@ package com.collab.echo.union.net
 		{
 		}
 		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testGetIPByUserName():void
 		{
+			connect( getIPByUserName );
+		}
+		
+		protected function getIPByUserName( event:BaseConnectionEvent,
+									        passThroughData:Object ):void
+		{
+			var name:String = "user" + conn.self.getClientID();
+			var ip:String = conn.getIPByUserName( name );
+
+			assertThat( ip, equalTo( "0:0:0:0:0:0:0:1" ));
 		}
 		
 		[Test( async )]
@@ -219,7 +252,13 @@ package com.collab.echo.union.net
 		
 		[Test]
 		[Ignore]
-		public function testWatchRooms():void
+		public function testAddServerMessageListener():void
+		{
+		}
+		
+		[Test]
+		[Ignore]
+		public function testRemoveServerMessageListener():void
 		{
 		}
 	}
