@@ -339,11 +339,14 @@ package com.collab.echo.union.net
          * @param forRoomIDs	The room(s) to which to send the message.
          */		
         override public function sendServerMessage( message:ChatMessage,
-													forRoomIDs:Array=null ) : void
+													forRoomIDs:Array=null ):void
         {
-			roomManager.sendMessage( message.type, forRoomIDs,
-						 			 message.includeSelf, null,
-						 			 message.message );
+			if ( message )
+			{
+				roomManager.sendMessage( message.type, forRoomIDs,
+							 			 message.includeSelf, null,
+							 			 message.message );
+			}
         }
         
         /**
@@ -399,7 +402,8 @@ package com.collab.echo.union.net
 														attrName:String,
 														attrScope:String):Array
         {
-        	return clientManager.getAttributeForClients( clientIDs, attrName, attrScope );
+        	return clientManager.getAttributeForClients( clientIDs, attrName,
+														 attrScope );
         }
         
 		/**

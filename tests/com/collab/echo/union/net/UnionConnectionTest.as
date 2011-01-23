@@ -1,5 +1,5 @@
 /*
-Cabin project.
+Echo project.
 
 Copyright (C) 2011 Collab
 
@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package com.collab.echo.union.net
 {
+	import com.collab.echo.core.messages.chat.TextChatMessage;
 	import com.collab.echo.core.rooms.BaseRoom;
 	import com.collab.echo.events.BaseConnectionEvent;
 	import com.collab.echo.model.UserVO;
@@ -27,6 +28,7 @@ package com.collab.echo.union.net
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.hamcrest.assertThat;
+	import org.hamcrest.collection.emptyArray;
 	import org.hamcrest.core.isA;
 	import org.hamcrest.object.equalTo;
 	import org.hamcrest.object.notNullValue;
@@ -173,16 +175,33 @@ package com.collab.echo.union.net
 			conn.watchRooms();
 		}
 		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testGetAttributeForClients():void
 		{
+			connect( getAttributeForClients );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function getAttributeForClients( event:BaseConnectionEvent,
+									   			   passThroughData:Object ):void
+		{
+			var result:Array = conn.getAttributeForClients( [], null, null );
+			
+			assertThat( result, emptyArray() );
+		}
+		
+		[Test( async )]
 		public function testGetClientByAttribute():void
 		{
+			connect( getClientByAttribute );
+		}
+		
+		protected function getClientByAttribute( event:BaseConnectionEvent,
+												 passThroughData:Object ):void
+		{
+			var result:IClient = conn.getClientByAttribute( null, null );
+			
+			assertThat( result.getClientID(), equalTo(
+						conn.self.getClientID() ));
 		}
 		
 		[Test( async )]
@@ -244,22 +263,54 @@ package com.collab.echo.union.net
 			assertThat( conn.self.isSelf(), equalTo( true ));
 		}
 		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testSendServerMessage():void
 		{
+			connect( sendServerMessage );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function sendServerMessage( event:BaseConnectionEvent,
+											  passThroughData:Object ):void
+		{
+			conn.sendServerMessage( null );
+		}
+		
+		[Test( async )]
 		public function testAddServerMessageListener():void
 		{
+			connect( addServerMessageListener );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function addServerMessageListener( event:BaseConnectionEvent,
+									  				 passThroughData:Object ):void
+		{
+			var result:Boolean = conn.addServerMessageListener( "foo", null );
+			
+			assertThat( result, equalTo( true ));
+			
+			result = conn.addServerMessageListener( "foo", null );
+			
+			assertThat( result, equalTo( false ));
+		}
+		
+		[Test( async )]
 		public function testRemoveServerMessageListener():void
 		{
+			connect( removeServerMessageListener );
+		}
+		
+		protected function removeServerMessageListener( event:BaseConnectionEvent,
+													    passThroughData:Object ):void
+		{
+			var result:Boolean = conn.addServerMessageListener( "foo", null );
+			
+			result = conn.removeServerMessageListener( "foo", null );
+			
+			assertThat( result, equalTo( true ));
+			
+			result = conn.removeServerMessageListener( "foo", null );
+			
+			assertThat( result, equalTo( false ));
 		}
 	}
 }
