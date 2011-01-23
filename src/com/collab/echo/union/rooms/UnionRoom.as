@@ -70,17 +70,17 @@ package com.collab.echo.union.rooms
 		protected var room						: Room;
 		
 		/**
-		 * Constructor. 
+		 * Setup a new Union room. 
 		 * 
-		 * @param id
-		 * @param autoJoin
-		 * @param watch
+		 * @param id		Name of the room.
+		 * @param autoJoin	Indicates if the room should be joined automatically.
+		 * @param watch		Indicates if the room should be watched automatically.
 		 */		
 		public function UnionRoom( id:String, autoJoin:Boolean=false, watch:Boolean=true )
 		{
 			super( id, autoJoin, watch );
 			
-			this.modules = new RoomModules();
+			modules = new RoomModules();
 			
 			// specify that the rooms should not "die on empty"; otherwise,
 			// each room would automatically be removed when its last occupant leaves
@@ -98,10 +98,9 @@ package com.collab.echo.union.rooms
 		// ====================================
 		
 		/**
-		 * Create a new Union room.
+		 * Create a new Union room, and join if <code>autoJoin</code> is true.
 		 * 
 		 * @param connection	Connection with Reactor.
-		 * @return 
 		 */		
 		override public function create( connection:Connection ):void
 		{
@@ -112,6 +111,7 @@ package com.collab.echo.union.rooms
 			
 			// listen for union events that we'll turn into BaseRoomEvents
 			room.addEventListener( RoomEvent.JOIN_RESULT,		 			joinResult );
+			room.addEventListener( RoomEvent.LEAVE_RESULT,		 			leaveResult );
 			room.addEventListener( RoomEvent.OCCUPANT_COUNT,	 			occupantCount );
 			room.addEventListener( RoomEvent.ADD_OCCUPANT, 		 			addOccupant );
 			room.addEventListener( RoomEvent.REMOVE_OCCUPANT, 	 			removeOccupant );
@@ -135,7 +135,10 @@ package com.collab.echo.union.rooms
 		override public function join():void
 		{
 			// union specific join command
-			room.join( null, updateLevels );
+			if ( room )
+			{
+				room.join( null, updateLevels );
+			}
 		}
 		
 		/**
@@ -144,7 +147,10 @@ package com.collab.echo.union.rooms
 		override public function leave():void
 		{
 			// union specific leave command
-			room.leave();
+			if ( room )
+			{
+				room.leave();
+			}
 		}
 		
 		/**
@@ -160,7 +166,9 @@ package com.collab.echo.union.rooms
         /**
 		 * Get room occupant ids.
 		 * 
-         * @return 
+		 * Returns an empty array when the room was not joined.
+		 * 
+         * @return List of string ids.
          */        
         override public function getOccupantIDs():Array
         {
@@ -170,11 +178,20 @@ package com.collab.echo.union.rooms
         /**
 		 * Parse client into user value object.
 		 * 
-		 * @param client
+		 * @param client	IClient instance.
+		 * @return 			Returns null if not connected, otherwise
+		 * 					a UserVO instance.
 		 */		
 		override public function parseUser( client:* ):UserVO
 		{
-			return connection.parseUser( client );
+			var result:UserVO;
+			
+			if ( connection )
+			{
+				result = connection.parseUser( client );
+			}
+			
+			return result;
 		}
         
         /**
@@ -375,7 +392,7 @@ package com.collab.echo.union.rooms
 		// ====================================
 		
 		/**
-		 * Invoked when the room was joined.
+		 * Invoked when the user joined the room.
 		 * 
 		 * @param event
 		 */		
@@ -388,6 +405,21 @@ package com.collab.echo.union.rooms
 			registerListeners();
         									   
 			super.joinResult( event );
+		}
+		
+		/**
+		 * Invoked when the current client left the room.
+		 * 
+		 * @param event
+		 */		
+		override protected function leaveResult( event:*=null ):void
+		{
+			// set join flag
+			joinedRoom = false;
+			
+			// XXX: unregister listeners?
+			
+			super.leaveResult( event );
 		}
 		
 		/**

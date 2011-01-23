@@ -20,12 +20,21 @@ package com.collab.echo.union.rooms
 {
 	import com.collab.cabin.util.StringUtil;
 	import com.collab.echo.events.BaseConnectionEvent;
+	import com.collab.echo.events.BaseRoomEvent;
+	import com.collab.echo.model.UserVO;
 	import com.collab.echo.union.net.UnionConnection;
+	
+	import net.user1.reactor.Status;
 	
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.hamcrest.assertThat;
+	import org.hamcrest.collection.arrayWithSize;
+	import org.hamcrest.collection.emptyArray;
+	import org.hamcrest.core.anyOf;
 	import org.hamcrest.object.equalTo;
+	import org.hamcrest.object.notNullValue;
+	import org.hamcrest.object.nullValue;
 	
 	public class UnionRoomTest
 	{	
@@ -40,7 +49,7 @@ package com.collab.echo.union.rooms
 		{
 			roomName = "test_room"
 			room = new UnionRoom( roomName );
-			conn = new UnionConnection(host, port);
+			conn = new UnionConnection( host, port );
 		}
 		
 		[After]
@@ -57,26 +66,12 @@ package com.collab.echo.union.rooms
 			conn = null;
 		}
 		
-		[Test]
-		public function testUnionRoom():void
-		{
-			assertThat( room.id, equalTo( roomName ));
-			assertThat( room.autoJoin, equalTo( false ));
-			assertThat( room.watch, equalTo( true ));
-		}
-		
-		[Test( async )]
-		public function testJoin():void
-		{
-			connect( join );
-		}
-		
 		protected function connect( successHandler:Function=null ):void
 		{
 			conn.addEventListener( BaseConnectionEvent.CONNECTION_SUCCESS, 
 				Async.asyncHandler( this, successHandler, 1000,
-									null, handleEventNeverOccurred ), 
-									false, 0, true );
+					null, handleEventNeverOccurred ), 
+				false, 0, true );
 			
 			conn.connect();
 		}
@@ -86,21 +81,104 @@ package com.collab.echo.union.rooms
 			Assert.fail('Pending Event Never Occurred');
 		}
 		
+		[Test]
+		public function testUnionRoom():void
+		{
+			assertThat( room.id, equalTo( roomName ));
+			assertThat( room.autoJoin, equalTo( false ));
+			assertThat( room.watch, equalTo( true ));
+			assertThat( room.joined, equalTo( false ));
+		}
+		
+		[Test( async )]
+		public function testCreate():void
+		{
+			connect( create );
+		}
+		
+		protected function create( event:BaseConnectionEvent,
+								   passThroughData:Object ):void
+		{
+			conn.addEventListener( BaseRoomEvent.ROOM_ADDED_RESULT, 
+				Async.asyncHandler( this, verifyCreate, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			room.create( conn );
+		}
+		
+		protected function verifyCreate( event:BaseRoomEvent,
+										 passThroughData:Object ):void
+		{
+			assertThat( event.data.getStatus(), anyOf(
+						equalTo( Status.ROOM_EXISTS ),
+						equalTo( Status.SUCCESS )
+			));
+		}
+		
+		[Test( async )]
+		public function testJoin():void
+		{
+			connect( join );
+		}
+		
 		protected function join( event:BaseConnectionEvent,
 								 passThroughData:Object ):void
 		{
+			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
+				Async.asyncHandler( this, verifyJoin, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			// connect and join room
+			room.create( conn );
+			room.join();
 		}
 		
-		[Test]
-		[Ignore]
-		public function testAddMessageListener():void
+		protected function verifyJoin( event:BaseRoomEvent,
+									   passThroughData:Object ):void
 		{
+			assertThat( event.data.getStatus(), equalTo( Status.SUCCESS ));
+			assertThat( room.joined, equalTo( true ));
 		}
 		
-		[Test]
-		[Ignore]
-		public function testCreate():void
+		[Test( async )]
+		public function testLeave():void
 		{
+			connect( leave );
+		}
+		
+		protected function leave( event:BaseConnectionEvent,
+								  passThroughData:Object ):void
+		{
+			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
+				Async.asyncHandler( this, verifyLeave1, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			// connect and join room
+			room.create( conn );
+			room.join();
+		}
+		
+		protected function verifyLeave1( event:BaseRoomEvent,
+										passThroughData:Object ):void
+		{
+			assertThat( event.data.getStatus(), equalTo( Status.SUCCESS ));
+			
+			room.addEventListener( BaseRoomEvent.LEAVE_RESULT, 
+				Async.asyncHandler( this, verifyLeave2, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			// leave room
+			room.leave();
+		}
+		
+		protected function verifyLeave2( event:BaseRoomEvent,
+									   passThroughData:Object ):void
+		{
+			assertThat( event.data.getStatus(), equalTo( Status.SUCCESS ));
+			assertThat( room.joined, equalTo( false ));
 		}
 		
 		[Test]
@@ -121,16 +199,34 @@ package com.collab.echo.union.rooms
 		{
 		}
 		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testGetClientById():void
 		{
+			connect( getClientById );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function getClientById( event:BaseConnectionEvent,
+										  passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			assertThat( room.getClientById( conn.self.getClientID() ),
+					    equalTo( conn.self ));
+		}
+		
+		[Test( async )]
 		public function testGetClientId():void
 		{
+			connect( getClientId );
+		}
+		
+		protected function getClientId( event:BaseConnectionEvent,
+								        passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			assertThat( room.getClientId(), equalTo(
+						conn.self.getClientID() ));
 		}
 		
 		[Test]
@@ -139,45 +235,122 @@ package com.collab.echo.union.rooms
 		{
 		}
 		
-		[Test]
-		[Ignore]
+		[Test( async )]
 		public function testGetIPByUserName():void
 		{
+			connect( getIPByUserName );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function getIPByUserName( event:BaseConnectionEvent,
+										    passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			var name:String = "user" + conn.self.getClientID();
+			
+			assertThat( room.getIPByUserName( name ), equalTo(
+						"0:0:0:0:0:0:0:1"));
+		}
+		
+		[Test( async )]
 		public function testGetOccupantIDs():void
 		{
+			connect( getOccupantIDs );
 		}
 		
-		[Test]
-		[Ignore]
+		protected function getOccupantIDs( event:BaseConnectionEvent,
+										   passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			assertThat( room.getOccupantIDs(), emptyArray() );
+			
+			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
+				Async.asyncHandler( this, verifyGetOccupantIDs, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			room.join();
+		}
+		
+		protected function verifyGetOccupantIDs( event:BaseRoomEvent,
+									   			 passThroughData:Object ):void
+		{
+			var users:Array = room.getOccupantIDs();
+			
+			assertThat( users, arrayWithSize( 1 ));
+			assertThat( users[0], equalTo(
+						conn.self.getClientID() ));
+		}
+		
+		[Test( async )]
 		public function testGetOccupants():void
 		{
+			connect( getOccupants );
+		}
+		
+		protected function getOccupants( event:BaseConnectionEvent,
+										 passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			assertThat( room.getOccupants(), emptyArray() );
+			
+			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
+				Async.asyncHandler( this, verifyGetOccupants, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			room.join();
+		}
+		
+		protected function verifyGetOccupants( event:BaseRoomEvent,
+											   passThroughData:Object ):void
+		{
+			var users:Array = room.getOccupants();
+			
+			assertThat( users, arrayWithSize( 1 ));
+			assertThat( users[0], equalTo( conn.self ));
+		}
+		
+		[Test]
+		public function testParseUser_disconnected():void
+		{
+			var user:UserVO = room.parseUser( conn.self );
+			
+			assertThat( user, nullValue() );
+		}
+		
+		[Test( async )]
+		public function testParseUser_connected():void
+		{
+			connect( testParseUser );
+		}
+		
+		protected function testParseUser( event:BaseConnectionEvent,
+										  passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			var user:UserVO = room.parseUser( conn.self );
+			
+			assertThat( user, notNullValue() );
+			assertThat( user.client, equalTo( conn.self ));
 		}
 		
 		[Test]
 		[Ignore]
-		public function testLeave():void
+		public function testSendMessage():void
 		{
 		}
 		
 		[Test]
 		[Ignore]
-		public function testParseUser():void
+		public function testAddMessageListener():void
 		{
 		}
 		
 		[Test]
 		[Ignore]
 		public function testRemoveMessageListener():void
-		{
-		}
-		
-		[Test]
-		[Ignore]
-		public function testSendMessage():void
 		{
 		}
 		

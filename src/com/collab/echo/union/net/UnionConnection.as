@@ -42,16 +42,38 @@ package com.collab.echo.union.net
 	// ====================================
 	
 	/**
-	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_REMOVED
-	 */
-	[Event(name="roomRemoved", type="com.collab.echo.events.BaseRoomEvent")]
-	
-	/**
+	 * Dispatched when a new room was created on the server.
+	 * 
 	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_ADDED
 	 */
 	[Event(name="roomAdded", type="com.collab.echo.events.BaseRoomEvent")]
 	
 	/**
+	 * Dispatched when the server reports the result of an attempt to create a
+	 * room by the current client.
+	 * 
+	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_ADDED_RESULT
+	 */
+	[Event(name="roomAddedResult", type="com.collab.echo.events.BaseRoomEvent")]
+	
+	/**
+	 * Dispatched when a room was removed from the server.
+	 * 
+	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_REMOVED
+	 */
+	[Event(name="roomRemoved", type="com.collab.echo.events.BaseRoomEvent")]
+	
+	/**
+	 * Dispatched when the server reports the result of a remove-room attempt
+	 * by the current client. 
+	 * 
+	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_REMOVED_RESULT
+	 */
+	[Event(name="roomRemovedResult", type="com.collab.echo.events.BaseRoomEvent")]
+	
+	/**
+	 * Dispatched when the total number of rooms on the server has changed.
+	 * 
 	 * @eventType com.collab.echo.events.BaseRoomEvent.ROOM_COUNT
 	 */
 	[Event(name="roomCount", type="com.collab.echo.events.BaseRoomEvent")]
@@ -83,7 +105,14 @@ package com.collab.echo.union.net
 		 */		
 		override public function get self():*
 		{
-			return reactor.self();
+			var result:*;
+			
+			if ( reactor )
+			{
+				result = reactor.self();
+			}
+			
+			return result;
 		}
 		
 		// ====================================
@@ -433,10 +462,17 @@ package com.collab.echo.union.net
             }
             
             // listen for room manager events
-			roomManager.addEventListener( RoomManagerEvent.ROOM_ADDED, 		roomAddedListener );
-			roomManager.addEventListener( RoomManagerEvent.ROOM_REMOVED, 	roomRemovedListener );
-			roomManager.addEventListener( RoomManagerEvent.ROOM_COUNT, 		roomCountListener );
-
+			roomManager.addEventListener( RoomManagerEvent.ROOM_ADDED,
+										  roomAddedListener );
+			roomManager.addEventListener( RoomManagerEvent.CREATE_ROOM_RESULT, 
+										  roomAddedResultListener );
+			roomManager.addEventListener( RoomManagerEvent.ROOM_REMOVED,
+										  roomRemovedListener );
+			roomManager.addEventListener( RoomManagerEvent.REMOVE_ROOM_RESULT,
+										  roomRemovedResultListener );
+			roomManager.addEventListener( RoomManagerEvent.ROOM_COUNT,
+										  roomCountListener );
+			
 			connectionReady();
 		}
 		
@@ -470,6 +506,20 @@ package com.collab.echo.union.net
 		}
 		
 		/**
+		 * Event listener triggered when the server reports the result of
+		 * an attempt to create a room by the current client.
+		 *	 
+		 * @param event
+		 */		
+		private function roomAddedResultListener( event:RoomManagerEvent ):void
+		{
+			event.preventDefault();
+			
+			_roomEvt = new BaseRoomEvent( BaseRoomEvent.ROOM_ADDED_RESULT, event );
+			dispatchEvent( _roomEvt );
+		}
+		
+		/**
 		 * Event listener triggered when a room is removed from the 
          * room manager's room list.
 		 * 
@@ -480,6 +530,20 @@ package com.collab.echo.union.net
 			event.preventDefault();
 			
 			_roomEvt = new BaseRoomEvent( BaseRoomEvent.ROOM_REMOVED, event );
+			dispatchEvent( _roomEvt );
+		}
+		
+		/**
+		 * Event listener triggered when the server reports the result of a
+		 * remove-room attempt by the current client.
+		 * 
+		 * @param event
+		 */		
+		private function roomRemovedResultListener( event:RoomManagerEvent ):void
+		{
+			event.preventDefault();
+			
+			_roomEvt = new BaseRoomEvent( BaseRoomEvent.ROOM_REMOVED_RESULT, event );
 			dispatchEvent( _roomEvt );
 		}
 		

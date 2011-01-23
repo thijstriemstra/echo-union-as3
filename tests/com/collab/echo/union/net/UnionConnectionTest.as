@@ -32,6 +32,7 @@ package com.collab.echo.union.net
 	import org.hamcrest.core.isA;
 	import org.hamcrest.object.equalTo;
 	import org.hamcrest.object.notNullValue;
+	import org.hamcrest.object.nullValue;
 	
 	public class UnionConnectionTest
 	{		
@@ -139,6 +140,8 @@ package com.collab.echo.union.net
 		{
 			var roomName:String = "room" + int(Math.random() * 1000).toFixed();
 			conn.createRoom( roomName, null, null, null );
+			
+			// XXX: verify room
 		}
 		
 		[Test( async )]
@@ -161,6 +164,8 @@ package com.collab.echo.union.net
 			}
 			
 			conn.createRooms( rooms );
+			
+			// XXX: verify rooms
 		}
 		
 		[Test( async )]
@@ -251,7 +256,7 @@ package com.collab.echo.union.net
 		}
 		
 		[Test( async )]
-		public function testGet_self():void
+		public function testGet_self_connected():void
 		{
 			connect( verifySelf );
 		}
@@ -261,6 +266,12 @@ package com.collab.echo.union.net
 		{
 			assertThat( conn.self, isA( IClient ));
 			assertThat( conn.self.isSelf(), equalTo( true ));
+		}
+		
+		[Test]
+		public function testGet_self_disconnected():void
+		{
+			assertThat( conn.self, nullValue() );
 		}
 		
 		[Test( async )]
