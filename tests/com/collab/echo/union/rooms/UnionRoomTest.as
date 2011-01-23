@@ -1,5 +1,5 @@
 /*
-Cabin project.
+Echo project.
 
 Copyright (C) 2011 Collab
 
@@ -19,26 +19,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.collab.echo.union.rooms
 {
 	import com.collab.cabin.util.StringUtil;
+	import com.collab.echo.events.BaseConnectionEvent;
+	import com.collab.echo.union.net.UnionConnection;
 	
+	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.hamcrest.assertThat;
 	import org.hamcrest.object.equalTo;
 	
 	public class UnionRoomTest
 	{	
+		private var conn		: UnionConnection;
 		private var room		: UnionRoom;
 		private var roomName	: String;
+		private var host		: String = "localhost";
+		private var port		: int = 9110;
 		
 		[Before]
 		public function setUp():void
 		{
 			roomName = "test_room"
 			room = new UnionRoom( roomName );
+			conn = new UnionConnection(host, port);
 		}
 		
 		[After]
 		public function tearDown():void
 		{
 			room = null;
+			if ( conn )
+			{
+				if ( conn.connected )
+				{
+					conn.disconnect();
+				}
+			}
+			conn = null;
 		}
 		
 		[Test]
@@ -47,6 +63,32 @@ package com.collab.echo.union.rooms
 			assertThat( room.id, equalTo( roomName ));
 			assertThat( room.autoJoin, equalTo( false ));
 			assertThat( room.watch, equalTo( true ));
+		}
+		
+		[Test( async )]
+		public function testJoin():void
+		{
+			connect( join );
+		}
+		
+		protected function connect( successHandler:Function=null ):void
+		{
+			conn.addEventListener( BaseConnectionEvent.CONNECTION_SUCCESS, 
+				Async.asyncHandler( this, successHandler, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			conn.connect();
+		}
+		
+		protected function handleEventNeverOccurred( passThroughData:Object ):void
+		{
+			Assert.fail('Pending Event Never Occurred');
+		}
+		
+		protected function join( event:BaseConnectionEvent,
+								 passThroughData:Object ):void
+		{
 		}
 		
 		[Test]
@@ -112,12 +154,6 @@ package com.collab.echo.union.rooms
 		[Test]
 		[Ignore]
 		public function testGetOccupants():void
-		{
-		}
-		
-		[Test]
-		[Ignore]
-		public function testJoin():void
 		{
 		}
 		
