@@ -15,6 +15,8 @@ Flex configuration file for general compiler settings.
 
 		<omit-trace-statements>true</omit-trace-statements>
 
+		<verbose-stacktraces>true</verbose-stacktraces>
+		
         <!-- compiler.show-actionscript-warnings: runs the AS3 compiler in a mode that
              detects legal but potentially incorrect code-->
         <show-actionscript-warnings>true</show-actionscript-warnings>
