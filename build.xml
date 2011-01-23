@@ -96,14 +96,14 @@ Project build file.
 	  	     tofile="${app.reports}/html/index.html"/>
     </target>
     
-    <target name="update-manifest" description="Update class manifest">
-		<exec executable="bash" failonerror="true">
-			<arg line="${manifest.exe}"/>
+	<target name="update-manifest" description="Update class manifest">
+    	<echo>===================</echo>
+		<echo>= UPDATE MANIFEST =</echo>
+		<echo>===================</echo>
+		<exec executable="${manifest.exe}" failonerror="true">
             <arg line="${app.src}"/>
-			<arg value="test.xml" />
+			<arg value="${lib.manifest}" />
 		</exec>
-    	<move file="${app.src}/test.xml" tofile="${lib.manifest}"
-              overwrite="true" />
 	</target>
 
 </project>

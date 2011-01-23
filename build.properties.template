@@ -2,8 +2,7 @@ FLEX_HOME = /Applications/Adobe Flex Builder 3 Plug-in/sdks/4.1.0
 compc.exe = ${FLEX_HOME}/bin/compc
 asdoc.exe = ${FLEX_HOME}/bin/asdoc
 flashplayer.exe = /Applications/Adobe Flash Player/flashplayerdebugger
-# tool available on http://blog.flashgen.com/downloads/
-manifest.exe = ${basedir}/../GenerateManifest
+manifest.exe = ${basedir}/../gen-manifest
 
 config.dir = config
 def.config = ${config.dir}/compiler-def.xml
