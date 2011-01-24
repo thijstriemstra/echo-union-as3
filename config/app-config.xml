@@ -8,19 +8,6 @@ Flex configuration file for general compiler settings.
     <benchmark>true</benchmark>
 
     <compiler>
-        <!-- compiler.debug: generates a movie that is suitable for debugging-->
-        <debug>false</debug>
-        
-        <optimize>true</optimize>
-
-		<omit-trace-statements>true</omit-trace-statements>
-
-		<verbose-stacktraces>true</verbose-stacktraces>
-		
-        <!-- compiler.show-actionscript-warnings: runs the AS3 compiler in a mode that
-             detects legal but potentially incorrect code-->
-        <show-actionscript-warnings>true</show-actionscript-warnings>
-
         <!-- compiler.source-path: list of path elements that form the roots of
              ActionScript class hierarchies -->
         <source-path>
@@ -36,7 +23,7 @@ Flex configuration file for general compiler settings.
 
         <namespaces>
             <namespace>
-                <uri>http://echo.collab.com</uri>
+                <uri>http://echo.collab.com/2011/union</uri>
                 <manifest>class-manifest.xml</manifest>
             </namespace>
         </namespaces>

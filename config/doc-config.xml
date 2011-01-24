@@ -10,10 +10,7 @@ Flex configuration file for Documentation compiler settings.
        <show-actionscript-warnings>false</show-actionscript-warnings>
    </compiler>
    
-   <!-- doc-sources: list of source file to include in the documentation.-->
-   <doc-sources>
-      <path-element>com/collab/echo/union</path-element>
-   </doc-sources>
+   <exclude-dependencies>true</exclude-dependencies>
    
    <!-- examples-path: path to look for the example files.-->
    <!-- examples-path usage:
@@ -35,7 +32,7 @@ Flex configuration file for Documentation compiler settings.
 
    <package-description-file>../doc/package-description.xml</package-description-file>
 
-    <keep-xml>false</keep-xml>
+   <keep-xml>false</keep-xml>
 
-    <output>../bin/api</output>
+   <output>../bin/api</output>
 </flex-config>

@@ -5,9 +5,25 @@ Flex configuration file for Library compiler settings.
 -->
 <flex-config>
 
+	<compiler>
+		<!-- compiler.debug: generates a movie that is suitable for debugging-->
+        <debug>false</debug>
+        
+        <optimize>true</optimize>
+
+		<omit-trace-statements>true</omit-trace-statements>
+
+		<verbose-stacktraces>false</verbose-stacktraces>
+		
+        <!-- compiler.show-actionscript-warnings: runs the AS3 compiler in a mode that
+             detects legal but potentially incorrect code-->
+        <show-actionscript-warnings>true</show-actionscript-warnings>
+    
+    </compiler>
+    
     <!-- include-namespaces: all classes in the listed namespaces are included in the output SWC-->
     <include-namespaces>
-        <uri>http://echo.collab.com</uri>
+        <uri>http://echo.collab.com/2011/union</uri>
     </include-namespaces>
 
     <!-- link-report: Output a XML-formatted report of all definitions linked into the application.-->

@@ -45,10 +45,20 @@ Project build file.
 		<antcall target="build-environment" />
 		<delete dir="${basedir}/${app.outputfolder}/api" failOnError="false"
 		                includeEmptyDirs="true"/>
+		<pathconvert property="asdoc.files" pathsep="," dirsep=".">
+                <fileset dir="src">
+                        <include name="**/*.as"/>
+                </fileset>
+                <mapper>
+                        <regexpmapper from="^.*(com.collab.echo.union.*)\.(as)" to="\1" />
+                </mapper>
+        </pathconvert>
+
 		<exec executable="${asdoc.exe}" failonerror="true" dir="${app.src}">
 			<arg line="-load-config+=${basedir}/${app.config}"/>
 			<arg value="-load-config+=${basedir}/${docs.config}" />
 			<arg value="-load-config+=${basedir}/${def.config}" />
+			<arg value="-doc-classes=${asdoc.files}"/>
 		</exec>
 	</target>
 
