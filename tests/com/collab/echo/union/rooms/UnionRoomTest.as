@@ -474,6 +474,12 @@ package com.collab.echo.union.rooms
 		
 		[Test]
 		[Ignore]
+		public function testHasMessageListener():void
+		{
+		}
+		
+		[Test]
+		[Ignore]
 		public function testRemoveMessageListener():void
 		{
 		}

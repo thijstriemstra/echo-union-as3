@@ -205,7 +205,6 @@ package com.collab.echo.union.net
          * Connect to server.
 		 * 
 		 * @see #disconnect()
-		 * @see #connected
          */		
         override public function connect():void
         {
@@ -226,7 +225,7 @@ package com.collab.echo.union.net
                 	log.setLevel( logLevel );
                 }
                 
-                // reactor listeners
+                // add reactor listeners
                 reactor.addEventListener( ReactorEvent.READY, unionConnectionReady );
                 reactor.addEventListener( ReactorEvent.CLOSE, unionConnectionClose );
                 
@@ -243,7 +242,6 @@ package com.collab.echo.union.net
 		 * Disconnect from server.
 		 * 
 		 * @see #connect()
-		 * @see com.collab.echo.net.Connection#connected
 		 */		
 		override public function disconnect():void
 		{
@@ -252,6 +250,8 @@ package com.collab.echo.union.net
 				super.disconnect();
 				
 				reactor.disconnect();
+				
+				// XXX: remove reactor listeners?
 			}
 		}
         
@@ -282,6 +282,7 @@ package com.collab.echo.union.net
 		 * 
 		 * @param rooms Vector list of BaseRoom subclasses.
 		 * @see #createRoom()
+		 * @see #watchRooms()
 		 */		
 		override public function createRooms( rooms:Vector.<BaseRoom> ):void
 		{
@@ -301,7 +302,7 @@ package com.collab.echo.union.net
 		}
         
         /**
-         * Create a new Union room.
+         * Create a new Union room using RoomManager.
          * 
          * @param id		Room name.
          * @param settings	RoomSettings instance.

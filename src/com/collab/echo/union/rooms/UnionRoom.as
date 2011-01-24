@@ -75,6 +75,8 @@ package com.collab.echo.union.rooms
 		/**
 		 * Used to specify the room modules that should be attached to a
 		 * server-side Union room at creation time.
+		 * 
+		 * @see #addModules()
 		 */		
 		protected var modules					: RoomModules;
 		
@@ -97,18 +99,18 @@ package com.collab.echo.union.rooms
 		protected var room						: Room;
 		
 		/**
-		 * Room listener mapping.
+		 * Room listeners mapping.
 		 * 
 		 * @example The contents of this variable:
 		 * 
 		 * <listing version="3.0">
-		 * for ( var cnt:int = 0; cnt &lt; eventListeners.length; cnt++ )
+		 * for ( var cnt:int = 0; cnt &lt; roomListeners.length; cnt++ )
 		 * {
-		 *     trace( eventListeners[cnt][ 0 ],  // event type
-		 *	          eventListeners[cnt][ 1 ]); // function
+		 *     trace( roomListeners[cnt][ 0 ],  // event type
+		 *	          roomListeners[cnt][ 1 ]); // function
 		 * }</listing>
 		 */		
-		protected var eventListeners			: Array;
+		protected var roomListeners			: Array;
 		
 		/**
 		 * Setup a new Union room. 
@@ -117,12 +119,13 @@ package com.collab.echo.union.rooms
 		 * @param autoJoin	Indicates if the room should be joined automatically.
 		 * @param watch		Indicates if the room should be watched automatically.
 		 */		
-		public function UnionRoom( id:String, autoJoin:Boolean=false, watch:Boolean=true )
+		public function UnionRoom( id:String, autoJoin:Boolean=false,
+								   watch:Boolean=true )
 		{
 			super( id, autoJoin, watch );
 			
 			modules = new RoomModules();
-			eventListeners = [
+			roomListeners = [
 				[ RoomEvent.JOIN_RESULT, 			 joinResult ],
 				[ RoomEvent.LEAVE_RESULT, 			 leaveResult ],
 				[ RoomEvent.OCCUPANT_COUNT, 		 occupantCount ],
@@ -165,10 +168,10 @@ package com.collab.echo.union.rooms
 			
 			// listen for union events that we'll turn into BaseRoomEvents
 			var cnt:int = 0;
-			for ( cnt; cnt < eventListeners.length; cnt++ )
+			for ( cnt; cnt < roomListeners.length; cnt++ )
 			{
-				room.addEventListener( eventListeners[cnt][ 0 ],
-									   eventListeners[cnt][ 1 ]);
+				room.addEventListener( roomListeners[cnt][ 0 ],
+									   roomListeners[cnt][ 1 ]);
 			}
 			
 			trace( StringUtil.replace( "Creating new %s called: %s", name, id ));
@@ -196,13 +199,13 @@ package com.collab.echo.union.rooms
 				// remove union event listeners
 				var cnt:int = 0;
 				var type:String;
-				for ( cnt; cnt < eventListeners.length; cnt++ )
+				for ( cnt; cnt < roomListeners.length; cnt++ )
 				{
-					type = eventListeners[cnt][ 0 ];
+					type = roomListeners[cnt][ 0 ];
 					if ( room.hasEventListener( type ))
 					{
 						room.removeEventListener( type,
-							 eventListeners[cnt][ 1 ]);
+							roomListeners[cnt][ 1 ]);
 					}
 				}
 				
@@ -264,6 +267,7 @@ package com.collab.echo.union.rooms
 		 * @param type
 		 * @param method
 		 * @see #removeMessageListener()
+		 * @see #hasMessageListener()
 		 */		
 		override public function addMessageListener( type:String, method:Function ):void
         {
@@ -275,6 +279,30 @@ package com.collab.echo.union.rooms
 				room.addMessageListener( type, method );
         	}
         }
+		
+		/**
+		 * Indicates if message listener was previously registered via
+		 * addMessageListener().
+		 * 
+		 * @param type
+		 * @param method
+		 * @return Boolean indicating if the message listener was previously
+		 *         registered. 
+		 * @see #addMessageListener()
+		 * @see #removeMessageListener()
+		 */		
+		override public function hasMessageListener( type:String,
+													 method:Function ):Boolean
+		{
+			var present:Boolean = super.hasMessageListener( type, method );
+			
+			if ( room )
+			{
+				present = room.hasMessageListener( type, method );
+			}
+			
+			return present;
+		}
         
         /**
          * Remove Union specific room message listener.
@@ -282,16 +310,17 @@ package com.collab.echo.union.rooms
 		 * @param type
 		 * @param method
 		 * @see #addMessageListener()
+		 * @see #hasMessageListener()
 		 */		
 		override public function removeMessageListener( type:String, method:Function ):void
         {
-        	if ( room )
-        	{
-        		// union specific message listener command
+			if ( room && room.hasMessageListener( type, method ))
+			{
+    			// union specific message listener command
 				room.removeMessageListener( type, method );
-        	}
-        	
-        	super.removeMessageListener( type, method );
+				
+				super.removeMessageListener( type, method );
+			}
         }
         
         /**
@@ -621,6 +650,7 @@ package com.collab.echo.union.rooms
 		 * Add RoomModule objects.
 	     * 
 		 * @param moduleObjects
+		 * @see #modules
 		 */		
 		protected function addModules( ...moduleObjects:Array ):void
 		{
