@@ -152,6 +152,7 @@ package com.collab.echo.union.rooms
 		 * 
 		 * @param connection	Connection with Reactor.
 		 * @see #disconnect
+		 * @see com.collab.echo.union.net.UnionConnection UnionConnection
 		 */		
 		override public function connect( connection:Connection ):void
 		{
