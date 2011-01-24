@@ -203,6 +203,9 @@ package com.collab.echo.union.net
 		
 		/**
          * Connect to server.
+		 * 
+		 * @see #disconnect()
+		 * @see #connected
          */		
         override public function connect():void
         {
@@ -237,14 +240,17 @@ package com.collab.echo.union.net
         }
 		
 		/**
-		 * Disconnect from server. 
+		 * Disconnect from server.
+		 * 
+		 * @see #connect()
+		 * @see com.collab.echo.net.Connection#connected
 		 */		
 		override public function disconnect():void
 		{
 			if ( _connected )
 			{
 				super.disconnect();
-			
+				
 				reactor.disconnect();
 			}
 		}
@@ -253,6 +259,7 @@ package com.collab.echo.union.net
 		 * Parse user.
 		 * 
 		 * @param client
+		 * @see com.collab.echo.model.UserVO
 		 */		
 		override public function parseUser( client:* ):UserVO
 		{
@@ -274,6 +281,7 @@ package com.collab.echo.union.net
 		 * Create and watch rooms.
 		 * 
 		 * @param rooms Vector list of BaseRoom subclasses.
+		 * @see #createRoom()
 		 */		
 		override public function createRooms( rooms:Vector.<BaseRoom> ):void
 		{
@@ -301,9 +309,7 @@ package com.collab.echo.union.net
          * @param modules	RoomModules instance.
          * @return 			Union Room.
 		 * 
-		 * @see net.user1.reactor.RoomModules RoomModules
-		 * @see net.user1.reactor.RoomSettings RoomSettings
-		 * @see net.user1.reactor.Room Room
+		 * @see #createRooms()
          */        
         override public function createRoom( id:String, settings:*, attrs:*,
 											 modules:* ):*
@@ -335,7 +341,8 @@ package com.collab.echo.union.net
 		}
         
         /**
-         * @inheritDoc 
+         * @inheritDoc
+		 * @see #removeServerMessageListener()
          */        
         override public function addServerMessageListener( type:String, method:Function,
         												   forRoomIDs:Array=null ):Boolean
@@ -361,6 +368,7 @@ package com.collab.echo.union.net
         
         /**
          * @inheritDoc 
+		 * @see #addServerMessageListener()
          */             
         override public function removeServerMessageListener( type:String,
 															  method:Function ):Boolean

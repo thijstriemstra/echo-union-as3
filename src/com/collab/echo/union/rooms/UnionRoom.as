@@ -63,6 +63,8 @@ package com.collab.echo.union.rooms
 	 * {
 	 *     trace("Welcome in the chess room!");
 	 * }</listing>
+	 * 
+	 * @see com.collab.echo.union.net.UnionConnection UnionConnection
 	 */	
 	public class UnionRoom extends BaseRoom
 	{
@@ -150,8 +152,8 @@ package com.collab.echo.union.rooms
 		 * 
 		 * Also joins the room when <code>autoJoin</code> is true.
 		 * 
-		 * @param connection	Connection with Reactor.
-		 * @see #disconnect
+		 * @param connection	Connection with Union.
+		 * @see #disconnect()
 		 * @see com.collab.echo.union.net.UnionConnection UnionConnection
 		 */		
 		override public function connect( connection:Connection ):void
@@ -183,7 +185,7 @@ package com.collab.echo.union.rooms
 		/**
 		 * Close the connection with the Union server for this room.
 		 * 
-		 * @see #connect
+		 * @see #connect()
 		 */		
 		override public function disconnect():void
 		{
@@ -212,7 +214,7 @@ package com.collab.echo.union.rooms
 		/**
 		 * Join the Union room.
 		 * 
-		 * @see #leave
+		 * @see #leave()
 		 */		
 		override public function join():void
 		{
@@ -226,7 +228,7 @@ package com.collab.echo.union.rooms
 		/**
 		 * Leave the Union room.
 		 * 
-		 * @see #join
+		 * @see #join()
 		 */		
 		override public function leave():void
 		{
@@ -261,7 +263,7 @@ package com.collab.echo.union.rooms
 		 * 
 		 * @param type
 		 * @param method
-		 * @see #removeMessageListener
+		 * @see #removeMessageListener()
 		 */		
 		override public function addMessageListener( type:String, method:Function ):void
         {
@@ -279,7 +281,7 @@ package com.collab.echo.union.rooms
          * 
 		 * @param type
 		 * @param method
-		 * @see #addMessageListener
+		 * @see #addMessageListener()
 		 */		
 		override public function removeMessageListener( type:String, method:Function ):void
         {
@@ -298,6 +300,7 @@ package com.collab.echo.union.rooms
          * @param type
          * @param message
          * @param includeSelf
+		 * @see #addMessageListener()
          */        
         override public function sendMessage( type:String, message:String,
         									  includeSelf:Boolean=false ):void
@@ -320,8 +323,8 @@ package com.collab.echo.union.rooms
 		 * trace( myID ); // 12</listing>
 		 * 
 		 * @return String indicating the user's client id on the Union server.
-		 * @see #getClientIdByUsername
-		 * @see #getAnonymousClientIdByUsername
+		 * @see #getClientIdByUsername()
+		 * @see #getAnonymousClientIdByUsername()
 		 */		
 		override public function getClientId():String
 		{
@@ -339,6 +342,7 @@ package com.collab.echo.union.rooms
 		 * Get room occupants.
 		 * 
 		 * @return List of IClient instances or null when room was not joined.
+		 * @see #getOccupantIDs()
 		 */        
 		override public function getOccupants():Array
 		{
@@ -364,6 +368,7 @@ package com.collab.echo.union.rooms
 		 * trace( ids ); // 12,14</listing>
 		 * 
 		 * @return List of string ids.
+		 * @see #getOccupants()
 		 */        
 		override public function getOccupantIDs():Array
 		{
@@ -407,6 +412,7 @@ package com.collab.echo.union.rooms
 		 * @param attrName
 		 * @param attrValue
 		 * @return 
+		 * @see #getClientById()
 		 */		
 		override public function getClientByAttribute( attrName:String,
 													   attrValue:String ):*
@@ -426,6 +432,7 @@ package com.collab.echo.union.rooms
 		 * 
 		 * @param id
 		 * @return 
+		 * @see #getClientByAttribute()
 		 */		
 		override public function getClientById( id:String ):*
 		{
@@ -472,6 +479,7 @@ package com.collab.echo.union.rooms
 		 * 
 		 * @param username
 		 * @return 			The client id.
+		 * @see #getClientId()
 		 */
 		override public function getClientIdByUsername( userName:String ):String
 		{
