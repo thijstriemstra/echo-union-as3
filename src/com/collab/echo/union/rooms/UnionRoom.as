@@ -156,11 +156,18 @@ package com.collab.echo.union.rooms
 		/**
 		 * Get room occupants.
 		 * 
-         * @return 
+         * @return List of IClilent instances or null when room was not joined.
          */        
         override public function getOccupants():Array
         {
-        	return room.getOccupants();
+			var result:Array;
+			
+			if ( room )
+			{
+				result = room.getOccupants();
+			}
+			
+        	return result;
         }
         
         /**
@@ -168,11 +175,18 @@ package com.collab.echo.union.rooms
 		 * 
 		 * Returns an empty array when the room was not joined.
 		 * 
-         * @return List of string ids.
+         * @return List of string ids or null when room was not joined.
          */        
         override public function getOccupantIDs():Array
         {
-        	return room.getOccupantIDs();
+			var result:Array;
+			
+			if ( room )
+			{
+				result = room.getOccupantIDs();
+			}
+			
+        	return result;
         }
         
         /**
@@ -203,7 +217,15 @@ package com.collab.echo.union.rooms
         override public function getAttributeForClients( clientIDs:Array, attrName:String,
         												 attrScope:String=null):Array
         {
-        	return connection.getAttributeForClients( clientIDs, attrName, attrScope );
+			var result:Array;
+			
+			if ( connection )
+			{
+				result = connection.getAttributeForClients( clientIDs,
+													attrName, attrScope );	
+			}
+			
+        	return result;
         }
 		
 		/**
@@ -262,7 +284,14 @@ package com.collab.echo.union.rooms
 		 */		
 		override public function getIPByUserName( name:String ):String
 		{
-			return connection.getIPByUserName( name );
+			var result:String;
+			
+			if ( connection )
+			{
+				result = connection.getIPByUserName( name );
+			}
+			
+			return result;
 		}
 		
 		/**
@@ -273,7 +302,14 @@ package com.collab.echo.union.rooms
 		override public function getClientByAttribute( attrName:String,
 													   attrValue:String ):*
 		{
-			return connection.getClientByAttribute( attrName, attrValue );
+			var result:*;
+			
+			if ( connection )
+			{
+				result = connection.getClientByAttribute( attrName, attrValue ); 
+			}
+			
+			return result;
 		}
 		
 		/**
@@ -284,7 +320,7 @@ package com.collab.echo.union.rooms
 		{
 			var result:*;
 			
-			if ( id != null )
+			if ( id && connection )
 			{
 				result = connection.getClientById( id );
 			}
@@ -299,7 +335,14 @@ package com.collab.echo.union.rooms
 		 */		
 		override public function getClientId():String
 		{
-			return connection.self.getClientID();
+			var result:String;
+			
+			if ( connection )
+			{
+				result = connection.self.getClientID();
+			}
+			
+			return result;
 		}
 		
 		/**
@@ -365,7 +408,8 @@ package com.collab.echo.union.rooms
 			var client:IClient;
 			var clientId:String;
 			
-			if ( name.substr( 0, user.length ) == user )
+			if ( name && name.substr( 0, user.length ) == user &&
+				 name.length > user.length )
 			{
 				client = getClientById( name.substr( user.length ));
 			}
@@ -448,6 +492,7 @@ package com.collab.echo.union.rooms
 		protected function addModules( ...moduleObjects:Array ):void
 		{
 			var module:Object;
+
 			for each ( module in moduleObjects )
 			{
 				if ( module.type == RoomModuleType.CLASS ||
@@ -455,6 +500,7 @@ package com.collab.echo.union.rooms
 				{
 					trace( StringUtil.replace( "Adding '%s' RoomModule: '%s'",
 						   module.type, module.alias ));
+
 					modules.addModule( module.alias, module.type );
 				}
 			}

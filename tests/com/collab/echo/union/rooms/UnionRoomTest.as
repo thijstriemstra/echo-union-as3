@@ -70,8 +70,8 @@ package com.collab.echo.union.rooms
 		{
 			conn.addEventListener( BaseConnectionEvent.CONNECTION_SUCCESS, 
 				Async.asyncHandler( this, successHandler, 1000,
-					null, handleEventNeverOccurred ), 
-				false, 0, true );
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
 			
 			conn.connect();
 		}
@@ -182,25 +182,76 @@ package com.collab.echo.union.rooms
 		}
 		
 		[Test]
-		[Ignore]
-		public function testGetAnonymousClientIdByUsername():void
+		public function testGetAnonymousClientIdByUsername_disconnected():void
 		{
-		}
-		
-		[Test]
-		[Ignore]
-		public function testGetAttributeForClients():void
-		{
-		}
-		
-		[Test]
-		[Ignore]
-		public function testGetClientByAttribute():void
-		{
+			assertThat( room.getAnonymousClientIdByUsername( null ),
+						nullValue() );
+			
+			assertThat( room.getAnonymousClientIdByUsername( "user" ),
+						nullValue() );
 		}
 		
 		[Test( async )]
-		public function testGetClientById():void
+		public function testGetAnonymousClientIdByUsername_connected():void
+		{
+			connect( getAnonymousClientIdByUsername );
+		}
+		
+		protected function getAnonymousClientIdByUsername( event:BaseConnectionEvent,
+								  						   passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
+				Async.asyncHandler( this, verifyAnonymousClientIdByUsername, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			room.join();
+		}
+		
+		protected function verifyAnonymousClientIdByUsername( event:BaseRoomEvent,
+										 					  passThroughData:Object ):void
+		{
+			assertThat( room.getAnonymousClientIdByUsername(
+						"user" + conn.self.getClientID() ),
+						equalTo( conn.self.getClientID() ));
+		}
+		
+		[Test]
+		public function testGetAttributeForClients_disconnected():void
+		{
+			assertThat( room.getAttributeForClients( [], "foo" ),
+						nullValue() );
+		}
+		
+		[Test]
+		[Ignore]
+		public function testGetAttributeForClients_connected():void
+		{
+		}
+		
+		[Test]
+		[Ignore]
+		public function testGetClientByAttribute_connected():void
+		{
+		}
+		
+		[Test]
+		public function testGetClientByAttribute_disconnected():void
+		{
+			assertThat( room.getClientByAttribute( "foo", "bar" ),
+						nullValue() );
+		}
+		
+		[Test]
+		public function testGetClientById_disconnected():void
+		{
+			assertThat( room.getClientById( "foo" ), nullValue() );
+		}
+		
+		[Test( async )]
+		public function testGetClientById_connected():void
 		{
 			connect( getClientById );
 		}
@@ -214,8 +265,14 @@ package com.collab.echo.union.rooms
 					    equalTo( conn.self ));
 		}
 		
+		[Test]
+		public function testGetClientId_disconnected():void
+		{
+			assertThat( room.getClientId(), nullValue() );
+		}
+		
 		[Test( async )]
-		public function testGetClientId():void
+		public function testGetClientId_connected():void
 		{
 			connect( getClientId );
 		}
@@ -230,13 +287,39 @@ package com.collab.echo.union.rooms
 		}
 		
 		[Test]
-		[Ignore]
-		public function testGetClientIdByUsername():void
+		public function testGetClientIdByUsername_disconnected():void
 		{
+			assertThat( room.getClientIdByUsername( "foo" ),
+						nullValue() )
 		}
 		
 		[Test( async )]
-		public function testGetIPByUserName():void
+		public function testGetClientIdByUsername_connected():void
+		{
+			connect( getClientIdByUsername );
+		}
+		
+		protected function getClientIdByUsername( event:BaseConnectionEvent,
+									       		  passThroughData:Object ):void
+		{
+			room.create( conn );
+			
+			var name:String = "user" + conn.self.getClientID();
+			
+			assertThat( room.getClientIdByUsername( name ), equalTo(
+						conn.self.getClientID() ));
+		}
+		
+		[Test]
+		public function testGetIPByUserName_disconnected():void
+		{
+			var ip:String = room.getIPByUserName( "foo" );
+			
+			assertThat( ip, nullValue() );
+		}
+		
+		[Test( async )]
+		public function testGetIPByUserName_connected():void
 		{
 			connect( getIPByUserName );
 		}
@@ -252,8 +335,16 @@ package com.collab.echo.union.rooms
 						"0:0:0:0:0:0:0:1"));
 		}
 		
+		[Test]
+		public function testGetOccupantIDs_offline():void
+		{
+			var users:Array = room.getOccupantIDs();
+			
+			assertThat( users, nullValue() );
+		}
+		
 		[Test( async )]
-		public function testGetOccupantIDs():void
+		public function testGetOccupantIDs_online():void
 		{
 			connect( getOccupantIDs );
 		}
@@ -282,8 +373,14 @@ package com.collab.echo.union.rooms
 						conn.self.getClientID() ));
 		}
 		
+		[Test]
+		public function testGetOccupants_disconnected():void
+		{
+			assertThat( room.getOccupants(), nullValue() );
+		}
+		
 		[Test( async )]
-		public function testGetOccupants():void
+		public function testGetOccupants_connected():void
 		{
 			connect( getOccupants );
 		}
