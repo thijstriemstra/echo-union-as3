@@ -85,6 +85,19 @@ package com.collab.echo.union.net
 	 * 
 	 * @langversion 3.0
  	 * @playerversion Flash 9
+	 * 
+	 * @example Creating a new UnionConnection:
+	 * 
+	 * <listing version="3.0">
+	 * var server:UnionConnection = new UnionConnection("localhost", 9110);
+	 * server.addEventListener( BaseConnectionEvent.CONNECT_SUCCESS, handleConnect );
+	 * server.connect();
+	 * 
+	 * function handleConnect( event:BaseConnectionEvent ):void
+	 * {
+	 *     // create room etc.
+	 *     trace( "Connected to server!" );
+	 * }</listing>
 	 */	
 	public class UnionConnection extends Connection
 	{
@@ -92,6 +105,9 @@ package com.collab.echo.union.net
 		// PROTECTED VARS
 		// ====================================
 		
+		/**
+		 * @private 
+		 */		
         protected var reactor			: Reactor;
 
         // ====================================
@@ -268,8 +284,8 @@ package com.collab.echo.union.net
 				var room:BaseRoom;
 				for each ( room in _rooms )
 				{
-					// create room
-					room.create( this );
+					// attach room to this connection
+					room.connect( this );
 				}
 
 				watchRooms();

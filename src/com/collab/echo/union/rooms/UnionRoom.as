@@ -38,6 +38,31 @@ package com.collab.echo.union.rooms
 	 * 
 	 * @langversion 3.0
  	 * @playerversion Flash 9
+	 * 
+	 * @example Creating and auto-joining a new UnionRoom:
+	 * 
+	 * <listing version="3.0">
+	 * // setup server connection
+	 * var server:UnionConnection = new UnionConnection("localhost", 9110);
+	 * server.addEventListener( BaseConnectionEvent.CONNECT_SUCCESS, handleServerConnect );
+	 * 
+	 * // setup room for auto-join
+	 * var room:UnionRoom = new UnionRoom( "chess", true );
+	 * room.addEventListener( BaseRoomEvent.JOIN_RESULT, handleRoomJoin );
+	 * 
+	 * // connect to union
+	 * server.connect();
+	 * 
+	 * function handleServerConnect( event:BaseConnectionEvent ):void
+	 * {
+	 *     // connect and join room
+	 *     room.connect( server )
+	 * }
+	 * 
+	 * function handleRoomJoin( event:BaseRoomEvent ):void
+	 * {
+	 *     trace("Welcome in the chess room!");
+	 * }</listing>
 	 */	
 	public class UnionRoom extends BaseRoom
 	{
@@ -65,9 +90,23 @@ package com.collab.echo.union.rooms
 		protected var updateLevels				: UpdateLevels;
 		
 		/**
-		 * A place for Union clients to engage in group communication.
+		 * The corresponding room on the Union server.
 		 */		
 		protected var room						: Room;
+		
+		/**
+		 * Room listener mapping.
+		 * 
+		 * @example The contents of this variable:
+		 * 
+		 * <listing version="3.0">
+		 * for ( var cnt:int = 0; cnt &lt; eventListeners.length; cnt++ )
+		 * {
+		 *     trace( eventListeners[cnt][ 0 ],  // event type
+		 *	          eventListeners[cnt][ 1 ]); // function
+		 * }</listing>
+		 */		
+		protected var eventListeners			: Array;
 		
 		/**
 		 * Setup a new Union room. 
@@ -81,6 +120,15 @@ package com.collab.echo.union.rooms
 			super( id, autoJoin, watch );
 			
 			modules = new RoomModules();
+			eventListeners = [
+				[ RoomEvent.JOIN_RESULT, 			 joinResult ],
+				[ RoomEvent.LEAVE_RESULT, 			 leaveResult ],
+				[ RoomEvent.OCCUPANT_COUNT, 		 occupantCount ],
+				[ RoomEvent.ADD_OCCUPANT, 			 addOccupant ],
+				[ RoomEvent.REMOVE_OCCUPANT, 		 removeOccupant ],
+				[ RoomEvent.UPDATE_CLIENT_ATTRIBUTE, clientAttributeUpdate ],
+				[ RoomEvent.SYNCHRONIZE, 			 synchronize ]
+			];
 			
 			// specify that the rooms should not "die on empty"; otherwise,
 			// each room would automatically be removed when its last occupant leaves
@@ -98,25 +146,27 @@ package com.collab.echo.union.rooms
 		// ====================================
 		
 		/**
-		 * Create a new Union room, and join if <code>autoJoin</code> is true.
+		 * Setup a connection for this Union room.
+		 * 
+		 * Also joins the room when <code>autoJoin</code> is true.
 		 * 
 		 * @param connection	Connection with Reactor.
+		 * @see #disconnect
 		 */		
-		override public function create( connection:Connection ):void
+		override public function connect( connection:Connection ):void
 		{
-			super.create( connection );
+			super.connect( connection );
 			
-			// create the room
+			// create the room on the union server
 			room = connection.createRoom( id, settings, null, modules );
 			
 			// listen for union events that we'll turn into BaseRoomEvents
-			room.addEventListener( RoomEvent.JOIN_RESULT,		 			joinResult );
-			room.addEventListener( RoomEvent.LEAVE_RESULT,		 			leaveResult );
-			room.addEventListener( RoomEvent.OCCUPANT_COUNT,	 			occupantCount );
-			room.addEventListener( RoomEvent.ADD_OCCUPANT, 		 			addOccupant );
-			room.addEventListener( RoomEvent.REMOVE_OCCUPANT, 	 			removeOccupant );
-			room.addEventListener( RoomEvent.UPDATE_CLIENT_ATTRIBUTE, 		clientAttributeUpdate );
-			room.addEventListener( RoomEvent.SYNCHRONIZE,		 			synchronize );
+			var cnt:int = 0;
+			for ( cnt; cnt < eventListeners.length; cnt++ )
+			{
+				room.addEventListener( eventListeners[cnt][ 0 ],
+									   eventListeners[cnt][ 1 ]);
+			}
 			
 			trace( StringUtil.replace( "Creating new %s called: %s", name, id ));
 			
@@ -130,7 +180,38 @@ package com.collab.echo.union.rooms
 		}
 		
 		/**
-		 * Join the union room.
+		 * Close the connection with the Union server for this room.
+		 * 
+		 * @see #connect
+		 */		
+		override public function disconnect():void
+		{
+			super.disconnect();
+			
+			if ( room )
+			{
+				// remove union event listeners
+				var cnt:int = 0;
+				var type:String;
+				for ( cnt; cnt < eventListeners.length; cnt++ )
+				{
+					type = eventListeners[cnt][ 0 ];
+					if ( room.hasEventListener( type ))
+					{
+						room.removeEventListener( type,
+							 eventListeners[cnt][ 1 ]);
+					}
+				}
+				
+				joinedRoom = false;
+				room = null;
+			}
+		}
+		
+		/**
+		 * Join the Union room.
+		 * 
+		 * @see #leave
 		 */		
 		override public function join():void
 		{
@@ -142,7 +223,9 @@ package com.collab.echo.union.rooms
 		}
 		
 		/**
-		 * Leave the union room.
+		 * Leave the Union room.
+		 * 
+		 * @see #join
 		 */		
 		override public function leave():void
 		{
@@ -153,42 +236,6 @@ package com.collab.echo.union.rooms
 			}
 		}
 		
-		/**
-		 * Get room occupants.
-		 * 
-         * @return List of IClilent instances or null when room was not joined.
-         */        
-        override public function getOccupants():Array
-        {
-			var result:Array;
-			
-			if ( room )
-			{
-				result = room.getOccupants();
-			}
-			
-        	return result;
-        }
-        
-        /**
-		 * Get room occupant ids.
-		 * 
-		 * Returns an empty array when the room was not joined.
-		 * 
-         * @return List of string ids or null when room was not joined.
-         */        
-        override public function getOccupantIDs():Array
-        {
-			var result:Array;
-			
-			if ( room )
-			{
-				result = room.getOccupantIDs();
-			}
-			
-        	return result;
-        }
-        
         /**
 		 * Parse client into user value object.
 		 * 
@@ -208,31 +255,12 @@ package com.collab.echo.union.rooms
 			return result;
 		}
         
-        /**
-         * @param clientIDs
-         * @param attrName
-         * @param attrScope
-         * @return 
-         */        
-        override public function getAttributeForClients( clientIDs:Array, attrName:String,
-        												 attrScope:String=null):Array
-        {
-			var result:Array;
-			
-			if ( connection )
-			{
-				result = connection.getAttributeForClients( clientIDs,
-													attrName, attrScope );	
-			}
-			
-        	return result;
-        }
-		
 		/**
-		 * Add union specific room message listener.
+		 * Add Union specific room message listener.
 		 * 
 		 * @param type
 		 * @param method
+		 * @see #removeMessageListener
 		 */		
 		override public function addMessageListener( type:String, method:Function ):void
         {
@@ -246,10 +274,11 @@ package com.collab.echo.union.rooms
         }
         
         /**
-         * Remove union specific room message listener.
+         * Remove Union specific room message listener.
          * 
 		 * @param type
 		 * @param method
+		 * @see #addMessageListener
 		 */		
 		override public function removeMessageListener( type:String, method:Function ):void
         {
@@ -263,7 +292,7 @@ package com.collab.echo.union.rooms
         }
         
         /**
-         * Send a message to a union room.
+         * Send a message to a Union room.
          * 
          * @param type
          * @param message
@@ -277,10 +306,87 @@ package com.collab.echo.union.rooms
         		room.sendMessage( type, includeSelf, null, message );
         	}
         }
+		
+		/**
+		 * Get own client id.
+		 * 
+		 * Returns null if the room is not connected.
+		 * 
+		 * @example Retrieving own client id:
+		 * 
+		 * <listing version="3.0">
+		 * var myID:String = room.getClientId();
+		 * trace( myID ); // 12</listing>
+		 * 
+		 * @return String indicating the user's client id on the Union server.
+		 * @see #getClientIdByUsername
+		 * @see #getAnonymousClientIdByUsername
+		 */		
+		override public function getClientId():String
+		{
+			var result:String;
+			
+			if ( connection )
+			{
+				result = connection.self.getClientID();
+			}
+			
+			return result;
+		}
 
 		/**
-		 * @param name
-		 * @return 
+		 * Get room occupants.
+		 * 
+		 * @return List of IClient instances or null when room was not joined.
+		 */        
+		override public function getOccupants():Array
+		{
+			var result:Array;
+			
+			if ( room )
+			{
+				result = room.getOccupants();
+			}
+			
+			return result;
+		}
+		
+		/**
+		 * Get room occupant ids.
+		 * 
+		 * Returns an empty array when the room was not joined.
+		 * 
+		 * @example Retrieving the room's occupant id's:
+		 * 
+		 * <listing version="3.0">
+		 * var ids:Array = room.getOccupantIDs();
+		 * trace( ids ); // 12,14</listing>
+		 * 
+		 * @return List of string ids.
+		 */        
+		override public function getOccupantIDs():Array
+		{
+			var result:Array;
+			
+			if ( room )
+			{
+				result = room.getOccupantIDs();
+			}
+			
+			return result;
+		}
+		
+		/**
+		 * Get IP address for username.
+		 * 
+		 * @example Retrieving the IP for a user called 'thijs':
+		 * 
+		 * <listing version="3.0">
+		 * var ip:String = room.getIPByUserName( "thijs" );
+		 * trace( ip ); // 0:0:0:0:0:0:0:1</listing>
+		 * 
+		 * @param name The username associated with the IP address.
+		 * @return The IP address in IPv6 or IPv4 format.
 		 */		
 		override public function getIPByUserName( name:String ):String
 		{
@@ -295,6 +401,8 @@ package com.collab.echo.union.rooms
 		}
 		
 		/**
+		 * Get client by attribute name and value.
+		 * 
 		 * @param attrName
 		 * @param attrValue
 		 * @return 
@@ -313,6 +421,8 @@ package com.collab.echo.union.rooms
 		}
 		
 		/**
+		 * Get client by id.
+		 * 
 		 * @param id
 		 * @return 
 		 */		
@@ -329,17 +439,22 @@ package com.collab.echo.union.rooms
 		}
 		
 		/**
-		 * Get own client id.
+		 * Get list of attributes for occupants by attrName.
 		 * 
-		 * @return 
-		 */		
-		override public function getClientId():String
+		 * @param clientIDs
+		 * @param attrName
+		 * @param attrScope
+		 * @return
+		 */        
+		override public function getAttributeForClients( clientIDs:Array, attrName:String,
+														 attrScope:String=null):Array
 		{
-			var result:String;
+			var result:Array;
 			
 			if ( connection )
 			{
-				result = connection.self.getClientID();
+				result = connection.getAttributeForClients( clientIDs,
+					attrName, attrScope );	
 			}
 			
 			return result;
@@ -347,6 +462,12 @@ package com.collab.echo.union.rooms
 		
 		/**
 		 * Look up the clientID of a selected client by username
+		 * 
+		 * @example Retrieving the client id for a user called 'ben':
+		 * 
+		 * <listing version="3.0">
+		 * var id:String = room.getClientIdByUsername( "ben" );
+		 * trace( id ); // 15</listing>
 		 * 
 		 * @param username
 		 * @return 			The client id.
@@ -439,6 +560,7 @@ package com.collab.echo.union.rooms
 		 * Invoked when the user joined the room.
 		 * 
 		 * @param event
+		 * @private
 		 */		
 		override protected function joinResult( event:*=null ):void
 		{
@@ -455,6 +577,7 @@ package com.collab.echo.union.rooms
 		 * Invoked when the current client left the room.
 		 * 
 		 * @param event
+		 * @private
 		 */		
 		override protected function leaveResult( event:*=null ):void
 		{
@@ -470,6 +593,7 @@ package com.collab.echo.union.rooms
 		 * A client attribute was changed.
 		 * 
 		 * @param event
+		 * @private
 		 */		
 		override protected function clientAttributeUpdate( event:*=null ):void
 		{
@@ -508,6 +632,8 @@ package com.collab.echo.union.rooms
 		
 		/**
          * Register message listeners.
+		 * 
+		 * @private
          */        
         protected function registerListeners():void
         {

@@ -91,29 +91,56 @@ package com.collab.echo.union.rooms
 		}
 		
 		[Test( async )]
-		public function testCreate():void
+		public function testConnect():void
 		{
-			connect( create );
+			connect( createConnection );
 		}
 		
-		protected function create( event:BaseConnectionEvent,
-								   passThroughData:Object ):void
+		protected function createConnection( event:BaseConnectionEvent,
+								             passThroughData:Object ):void
 		{
 			conn.addEventListener( BaseRoomEvent.ROOM_ADDED_RESULT, 
-				Async.asyncHandler( this, verifyCreate, 1000,
+				Async.asyncHandler( this, verifyConnection, 1000,
 									null, handleEventNeverOccurred ), 
 									false, 0, true );
 			
-			room.create( conn );
+			room.connect( conn );
 		}
 		
-		protected function verifyCreate( event:BaseRoomEvent,
-										 passThroughData:Object ):void
+		protected function verifyConnection( event:BaseRoomEvent,
+										     passThroughData:Object ):void
 		{
 			assertThat( event.data.getStatus(), anyOf(
 						equalTo( Status.ROOM_EXISTS ),
 						equalTo( Status.SUCCESS )
 			));
+		}
+		
+		[Test( async )]
+		public function testDisconnect():void
+		{
+			connect( disconnect );
+		}
+		
+		protected function disconnect( event:BaseConnectionEvent,
+									   passThroughData:Object ):void
+		{
+			conn.addEventListener( BaseRoomEvent.ROOM_ADDED_RESULT, 
+				Async.asyncHandler( this, verifyDisconnect, 1000,
+									null, handleEventNeverOccurred ), 
+									false, 0, true );
+			
+			room.connect( conn );
+		}
+		
+		protected function verifyDisconnect( event:BaseRoomEvent,
+											 passThroughData:Object ):void
+		{
+			assertThat( room.connection, equalTo( conn ));
+			
+			room.disconnect();
+			
+			assertThat( room.connection, nullValue() );
 		}
 		
 		[Test( async )]
@@ -130,7 +157,7 @@ package com.collab.echo.union.rooms
 									null, handleEventNeverOccurred ), 
 									false, 0, true );
 			// connect and join room
-			room.create( conn );
+			room.connect( conn );
 			room.join();
 		}
 		
@@ -156,7 +183,7 @@ package com.collab.echo.union.rooms
 									false, 0, true );
 			
 			// connect and join room
-			room.create( conn );
+			room.connect( conn );
 			room.join();
 		}
 		
@@ -200,7 +227,7 @@ package com.collab.echo.union.rooms
 		protected function getAnonymousClientIdByUsername( event:BaseConnectionEvent,
 								  						   passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			room.addEventListener( BaseRoomEvent.JOIN_RESULT, 
 				Async.asyncHandler( this, verifyAnonymousClientIdByUsername, 1000,
@@ -259,7 +286,7 @@ package com.collab.echo.union.rooms
 		protected function getClientById( event:BaseConnectionEvent,
 										  passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			assertThat( room.getClientById( conn.self.getClientID() ),
 					    equalTo( conn.self ));
@@ -280,7 +307,7 @@ package com.collab.echo.union.rooms
 		protected function getClientId( event:BaseConnectionEvent,
 								        passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			assertThat( room.getClientId(), equalTo(
 						conn.self.getClientID() ));
@@ -302,7 +329,7 @@ package com.collab.echo.union.rooms
 		protected function getClientIdByUsername( event:BaseConnectionEvent,
 									       		  passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			var name:String = "user" + conn.self.getClientID();
 			
@@ -327,7 +354,7 @@ package com.collab.echo.union.rooms
 		protected function getIPByUserName( event:BaseConnectionEvent,
 										    passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			var name:String = "user" + conn.self.getClientID();
 			
@@ -352,7 +379,7 @@ package com.collab.echo.union.rooms
 		protected function getOccupantIDs( event:BaseConnectionEvent,
 										   passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			assertThat( room.getOccupantIDs(), emptyArray() );
 			
@@ -388,7 +415,7 @@ package com.collab.echo.union.rooms
 		protected function getOccupants( event:BaseConnectionEvent,
 										 passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			assertThat( room.getOccupants(), emptyArray() );
 			
@@ -425,7 +452,7 @@ package com.collab.echo.union.rooms
 		protected function testParseUser( event:BaseConnectionEvent,
 										  passThroughData:Object ):void
 		{
-			room.create( conn );
+			room.connect( conn );
 			
 			var user:UserVO = room.parseUser( conn.self );
 			
