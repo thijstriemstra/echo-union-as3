@@ -213,8 +213,9 @@ package com.collab.echo.union.net
             	// notify others
 				super.connect();
 
-                trace( StringUtil.replace( "Connecting to Union server on %s:%s",
-					   url, port ));
+                trace( StringUtil.replace(
+					   "Connecting to Union server on %s:%s (logging: %s)",
+					   url, port, logging ));
 
                 // create reactor
                 reactor = new Reactor( "", logging );
