@@ -186,7 +186,7 @@ package com.collab.echo.union.net
 		}
 		
 		/**
-		 * Create new Union connection.
+		 * Used to create a new Union connection.
 		 * 
 		 * @inheritDoc
 		 */		
@@ -219,20 +219,20 @@ package com.collab.echo.union.net
 
                 // create reactor
                 reactor = new Reactor( "", logging );
-                
+
                 // logging
                 if ( logLevel )
                 {
                 	log.setLevel( logLevel );
                 }
-                
+
                 // add reactor listeners
                 reactor.addEventListener( ReactorEvent.READY, unionConnectionReady );
                 reactor.addEventListener( ReactorEvent.CLOSE, unionConnectionClose );
-                
+
                 // XXX: replace XML socket connection
                 connectionManager.addConnection( new XMLSocketConnection( url, port ));
-                
+
                 // connect
                 _connected = false;
                 reactor.connect();
@@ -249,9 +249,9 @@ package com.collab.echo.union.net
 			if ( _connected )
 			{
 				super.disconnect();
-				
+
 				reactor.disconnect();
-				
+
 				// XXX: remove reactor listeners?
 			}
 		}
@@ -267,14 +267,14 @@ package com.collab.echo.union.net
 			var vo:UserVO = new UserVO( client.getClientID() );
 			vo.username = client.getAttribute( UserVO.USERNAME );
 			vo.client = client;
-			
+
 			// generate generic username
 			if ( vo.username == null )
 			{
 				// XXX: get this from a constant
 				vo.username = "user" + vo.id;
 			}
-			
+
 			return vo;
 		}
 		
@@ -288,7 +288,7 @@ package com.collab.echo.union.net
 		override public function createRooms( rooms:Vector.<BaseRoom> ):void
 		{
 			_rooms = rooms;
-			
+
 			if ( rooms.length > 0 )
 			{
 				var room:BaseRoom;
@@ -327,7 +327,7 @@ package com.collab.echo.union.net
 			// watch for rooms
 			var room:BaseRoom;
 			var ids:Vector.<BaseRoom> = new Vector.<BaseRoom>();
-			
+
 			for each ( room in _rooms )
 			{
 				if ( room.watch )
@@ -335,10 +335,10 @@ package com.collab.echo.union.net
 					ids.push( room );
 				}
 			}
-			
+
 			var commonRoomQualifier:String = StringUtil.replace( "%s.*",
 											 RoomUtils.getRoomsQualifiers( ids ));
-			
+
 			roomManager.watchForRooms( commonRoomQualifier );
 		}
         
@@ -350,7 +350,7 @@ package com.collab.echo.union.net
         												   forRoomIDs:Array=null ):Boolean
         {
         	var result:Boolean = false;
-        	
+
         	if ( type )
         	{
         		if ( !messageManager.hasMessageListener( type, method ))
@@ -358,13 +358,13 @@ package com.collab.echo.union.net
 					result = messageManager.addMessageListener( type, method, forRoomIDs );
         		}
         	}
-        	
+
         	if ( result )
         	{
         		trace( StringUtil.replace( "addServerMessageListener - type: %s, method: %s",
 										   type, method ));
         	}
-        	
+
         	return result;
         }
         
